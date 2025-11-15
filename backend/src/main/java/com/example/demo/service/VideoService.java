@@ -25,7 +25,7 @@ public class VideoService {
     private static final String VIDEO_UPLOAD_DIR = "src/main/resources/static/videos/";
     private static final String IMAGE_UPLOAD_DIR = "src/main/resources/static/photos/";
 
-    public Video uploadVideo(MultipartFile file, String word, String topic) throws IOException {
+    public Video uploadVideo(MultipartFile file, String word, String topic, String description) throws IOException {
         // Determine media type based on file content type
         String contentType = file.getContentType();
         String mediaType = "VIDEO";
@@ -52,7 +52,7 @@ public class VideoService {
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         // Create video entity with media type
-        Video video = new Video(word, topic, uniqueFilename, mediaType);
+        Video video = new Video(word, topic, description, uniqueFilename, mediaType);
         return videoRepository.save(video);
     }
 
@@ -63,6 +63,10 @@ public class VideoService {
     public Video getVideoById(Long id) {
         return videoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Video not found with id: " + id));
+    }
+
+    public Video getVideoByVideoPathThatInclue(String path) {
+        return videoRepository.findByVideoPathContaining(path);
     }
 
     public Video approveVideo(Long id) {

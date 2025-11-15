@@ -19,6 +19,9 @@ public class Video {
     @Column(name = "video_path", nullable = false)
     private String videoPath;
 
+    @Column(name = "description", nullable = false)
+    private String description;
+
     @Column(name = "media_type", nullable = false)
     private String mediaType; // "VIDEO" or "IMAGE"
 
@@ -40,7 +43,8 @@ public class Video {
     // Constructors
     public Video() {}
 
-    public Video(String word, String topic, String videoPath) {
+    public Video(String word, String topic, String description, String videoPath) {
+        this.description = description;
         this.word = word;
         this.topic = topic;
         this.videoPath = videoPath;
@@ -48,12 +52,13 @@ public class Video {
         this.status = VideoStatus.DRAFT;
     }
 
-    public Video(String word, String topic, String videoPath, String mediaType) {
+    public Video(String word, String topic, String description, String videoPath, String mediaType) {
         this.word = word;
         this.topic = topic;
         this.videoPath = videoPath;
         this.mediaType = mediaType;
         this.status = VideoStatus.DRAFT;
+        this.description = description;
     }
 
     // Getters and Setters
@@ -87,6 +92,14 @@ public class Video {
 
     public void setVideoPath(String videoPath) {
         this.videoPath = videoPath;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getMediaType() {

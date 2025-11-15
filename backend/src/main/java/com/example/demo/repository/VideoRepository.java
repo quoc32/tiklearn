@@ -12,4 +12,6 @@ public interface VideoRepository extends JpaRepository<Video, Long> {
     List<Video> findByStatus(VideoStatus status);
     List<Video> findByTopic(String topic);
     List<Video> findByWord(String word);
+    Video findByVideoPath(String path);
+    Video findByVideoPathContaining(String path);
 }
