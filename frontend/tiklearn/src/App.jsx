@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import TopicSelectPage from './pages/TopicSelectPage';
 import LearnPage from './pages/LearnPage';
 import QuizPage from './pages/QuizPage';
+import ReviewPage from './pages/ReviewPage';
 import ResultPage from './pages/ResultPage';
 
 // IMPORT CÁC TRANG MỚI CỦA MODULE 2
@@ -23,6 +24,7 @@ function App() {
       <Route path="/topics" element={<TopicSelectPage />} />
       <Route path="/learn/:topicId" element={<LearnPage />} />
       <Route path="/quiz" element={<QuizPage />} />
+      <Route path="/review" element={<ReviewPage />} />
       <Route path="/result" element={<ResultPage />} />
 
       {/* Module 2 Routes (MỚI) */}

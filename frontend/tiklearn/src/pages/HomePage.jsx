@@ -1,4 +1,3 @@
-// src/pages/HomePage.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './HomePage.css';
@@ -25,12 +24,19 @@ const HomePage = () => {
                     <p>Áp dụng nhập vai POV.</p>
                 </Link>
 
-                {/* Module 3: Ôn tập (Vẫn vô hiệu hóa) */}
-                <div className="module-card disabled">
-                    <div className="module-icon">📚</div>
-                    <h2>Module 3: "Ôn tập Thông minh"</h2>
-                    <p>Ghi nhớ dài hạn (Sắp ra mắt)</p>
-                </div>
+                {/* Module 3: Ôn tập - link to review page */}
+                <Link to="/review" className="module-card module-3">
+                    <div className="icon-circle">
+                        <div className="module-icon">📚</div>
+                    </div>
+                    <div className="module-body">
+                        <div className="module-head">
+                            <h2>Module 3: "Ôn tập Thông minh"</h2>
+                            <span className="badge">Ôn tập</span>
+                        </div>
+                        <p>Ôn lại và củng cố các từ bạn đã học bằng quiz trắc nghiệm ngắn.</p>
+                    </div>
+                </Link>
             </div>
         </div>
     );

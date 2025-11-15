@@ -22,4 +22,13 @@ public interface UserVocabularyRepository extends JpaRepository<UserVocabulary, 
             String topicName,
             Pageable pageable
     );
+
+        // Count learned vocabularies for a user
+        long countByUser_IdAndStatus(Long userId, LearningStatus status);
+
+        // List all learned vocabularies for a user
+        List<UserVocabulary> findByUser_IdAndStatus(Long userId, LearningStatus status);
+
+        // List learned vocabularies with pagination/limit support
+        List<UserVocabulary> findByUser_IdAndStatus(Long userId, LearningStatus status, Pageable pageable);
 }

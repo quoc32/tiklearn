@@ -108,6 +108,7 @@ public class LearningService {
                     log.info("  - ✗ INCORRECT - Added to missed");
                 }
                 userVocabRepo.save(uv);
+                log.info("  - Updated UV status to {}", uv.getStatus());
             } else {
                 log.warn("  - WARNING: UserVocabulary not found for vocabId: {}", result.getVocabularyId());
             }
@@ -121,6 +122,37 @@ public class LearningService {
     }
 
     // --- Helper Mappers ---
+
+    // Count learned vocabularies for a user
+    public long countLearnedForUser(Long userId) {
+        return userVocabRepo.countByUser_IdAndStatus(userId, LearningStatus.LEARNED);
+    }
+
+    // Get all learned vocabularies for a user
+    public List<LearningFlowDTO> getAllLearnedForUser(Long userId) {
+        List<UserVocabulary> list = userVocabRepo.findByUser_IdAndStatus(userId, LearningStatus.LEARNED);
+        return list.stream().map(this::mapToLearningFlowDTO).collect(Collectors.toList());
+    }
+
+    // Get learned vocabularies with limit
+    public List<LearningFlowDTO> getLearnedForUserWithLimit(Long userId, int limit) {
+        List<UserVocabulary> list = userVocabRepo.findByUser_IdAndStatus(userId, LearningStatus.LEARNED, PageRequest.of(0, Math.max(0, limit)));
+        return list.stream().map(this::mapToLearningFlowDTO).collect(Collectors.toList());
+    }
+
+    // Debug helper: check if a UserVocabulary exists for user and vocab
+    @Transactional
+    public boolean hasUserVocabulary(Long userId, Long vocabId) {
+        return userVocabRepo.findByUser_IdAndVocabulary_Id(userId, vocabId).isPresent();
+    }
+
+    @Transactional
+    public List<Long> getUserVocabularyVocabularyIds(Long userId) {
+        return userVocabRepo.findByUser_IdAndStatus(userId, LearningStatus.LEARNED)
+                .stream()
+                .map(uv -> uv.getVocabulary().getId())
+                .collect(Collectors.toList());
+    }
 
     private LearningFlowDTO mapToLearningFlowDTO(UserVocabulary uv) {
         Vocabulary vocab = uv.getVocabulary();

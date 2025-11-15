@@ -1,0 +1,58 @@
+/* ReviewPage styles — colorful theme */
+:root{
+    --bg-start: #fff7ed;
+    --bg-end: #fff1f0;
+    --accent-1: #ff7a59; /* warm orange */
+    --accent-2: #ffb36b; /* light orange */
+    --accent-3: #7c3aed; /* purple */
+    --muted: #6b7280;
+}
+
+.learn-container { padding: 36px; max-width: 1100px; margin: 0 auto; font-size: 17px; }
+.learn-header { margin-bottom: 18px; }
+.learn-header h1{ font-size: 2rem; color: var(--accent-3); }
+
+.review-controls { background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,250,245,0.9)); border-radius: 16px; padding: 22px; box-shadow: 0 18px 40px rgba(124,58,237,0.06); border: 1px solid rgba(124,58,237,0.06); }
+
+.hero { display: flex; gap: 22px; align-items: stretch; }
+.hero-left{ flex:1; padding: 10px 8px; }
+.hero-left h1{ margin:0 0 8px; font-size:1.8rem; color:var(--accent-3); }
+.hero-left p{ margin:0 0 16px; color:var(--muted); font-size:1.05rem; }
+.stats{ display:flex; gap:14px; }
+.stat{ padding:14px 18px; border-radius:12px; text-align:center; min-width:110px; box-shadow: 0 10px 24px rgba(124,58,237,0.06); }
+.stat:nth-child(1){ background: linear-gradient(180deg,#fff6ed,#fff0e6); border: 1px solid rgba(255,160,60,0.12); }
+.stat:nth-child(2){ background: linear-gradient(180deg,#fff9f8,#fff6fb); border: 1px solid rgba(124,58,237,0.06); }
+.stat-number{ font-size:1.6rem; font-weight:900; color:var(--accent-1); }
+.stat-label{ font-size:0.95rem; color:var(--muted); }
+
+.hero-right{ width:360px; display:flex; align-items:center; justify-content:center; }
+.limit-controls{ width:100%; background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,250,250,0.9)); padding:12px; border-radius:12px; border:1px solid rgba(124,58,237,0.04); }
+.limit-controls label{ display:block; font-weight:700; margin-bottom:8px; color:#111827; font-size:1rem; }
+.limit-input{ display:flex; align-items:center; gap:10px; }
+.limit-input input{ width:100px; padding:10px 12px; border-radius:10px; border:1px solid #f3e8ff; text-align:center; font-weight:900; background:linear-gradient(180deg,#fff,#fffaf6); font-size:1rem; }
+.limit-input button{ background:linear-gradient(90deg,var(--accent-2),var(--accent-1)); color:#fff; border:none; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:800; box-shadow: 0 8px 18px rgba(255,122,89,0.12); }
+.preset{ margin-top:10px; display:flex; gap:8px; }
+.preset button{ padding:6px 10px; border-radius:10px; border:none; background: linear-gradient(90deg,#fff,#fff); cursor:pointer; box-shadow: 0 6px 12px rgba(16,24,40,0.04); color:#374151; }
+.preset button:hover{ transform:translateY(-3px); }
+.actions{ display:flex; gap:10px; margin-top:14px; }
+.btn-primary{ background:linear-gradient(90deg,var(--accent-2),var(--accent-1)); color:#fff; padding:12px 18px; border-radius:14px; border:none; cursor:pointer; font-weight:900; box-shadow: 0 16px 36px rgba(255,122,89,0.14); transition: transform .18s ease, box-shadow .18s ease; font-size:1rem; }
+.btn-primary:hover{ transform: translateY(-4px); box-shadow: 0 28px 60px rgba(255,122,89,0.18); }
+.btn-outline{ background:linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4)); border:2px solid rgba(124,58,237,0.14); color:var(--accent-3); padding:12px 14px; border-radius:14px; cursor:pointer; font-weight:800; font-size:0.98rem; }
+.btn-link{ background:transparent; border:none; color:var(--accent-3); padding:8px; cursor:pointer; text-decoration:underline; font-weight:800; font-size:0.98rem; }
+
+.preview{ margin-top:18px; }
+.preview h3{ margin:0 0 8px; color:#111827; font-size:1.1rem; }
+.preview-list{ display:flex; flex-wrap:wrap; gap:12px; max-height:300px; overflow:auto; padding:8px; }
+.preview-item{ background: linear-gradient(180deg,#fff7fe,#fef8ff); border: 1px solid rgba(124,58,237,0.06); padding:12px 14px; border-radius:12px; min-width:240px; box-shadow: 0 10px 24px rgba(124,58,237,0.03); transition: transform .14s ease, box-shadow .14s ease; }
+.preview-item:hover{ transform: translateY(-6px); box-shadow: 0 28px 60px rgba(124,58,237,0.12); }
+.pv-word{ font-weight:900; color:#5b21b6; font-size:1.05rem; }
+.pv-meaning{ color:#374151; font-size:1rem; }
+.small{ color:var(--muted); }
+.muted{ color:#9ca3af; }
+.error-text{ color:#dc2626; font-weight:700; }
+.back-row{ margin-top:14px; }
+
+@media (max-width: 880px){
+    .hero{ flex-direction:column; }
+    .hero-right{ width:100%; }
+}

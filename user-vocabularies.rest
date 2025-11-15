@@ -1,0 +1,11 @@
+### Count learned vocabularies for a user
+GET http://localhost:8080/api/v1/users/2/vocabularies/learned/count
+Accept: application/json
+
+### Get all learned vocabularies for a user
+GET http://localhost:8080/api/v1/users/2/vocabularies/learned
+Accept: application/json
+
+### Get learned vocabularies for a user with limit
+GET http://localhost:8080/api/v1/users/2/vocabularies/learned?limit=2
+Accept: application/json
