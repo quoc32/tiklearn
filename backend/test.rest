@@ -1,0 +1,251 @@
+### ============================================
+### AUTHENTICATION APIs
+### ============================================
+
+### 1. Login với admin account
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+###
+
+### 2. Login với user account
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user123"
+}
+
+###
+
+### 3. Login với sai password
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "wrongpassword"
+}
+
+###
+
+### 4. Check session (sau khi login)
+GET http://localhost:8080/api/auth/check
+
+###
+
+### 5. Get current user info
+GET http://localhost:8080/api/auth/me
+
+###
+
+### 6. Logout
+POST http://localhost:8080/api/auth/logout
+
+###
+
+### 7. Check session after logout
+GET http://localhost:8080/api/auth/check
+
+###
+
+### ============================================
+### TOPIC MANAGEMENT APIs
+### ============================================
+
+### 8. Tạo chủ đề mới
+POST http://localhost:8080/admin/topics
+Content-Type: application/json
+
+{
+  "name": "Animals"
+}
+
+###
+
+### 9. Tạo thêm các chủ đề khác
+POST http://localhost:8080/admin/topics
+Content-Type: application/json
+
+{
+  "name": "Food"
+}
+
+###
+
+POST http://localhost:8080/admin/topics
+Content-Type: application/json
+
+{
+  "name": "Travel"
+}
+
+###
+
+### 3. Lấy tất cả chủ đề
+GET http://localhost:8080/admin/topics
+
+###
+
+### 4. Lấy chủ đề theo ID
+GET http://localhost:8080/admin/topics/1
+
+###
+
+### 5. Cập nhật chủ đề
+PUT http://localhost:8080/admin/topics/1
+Content-Type: application/json
+
+{
+  "name": "Wild Animals"
+}
+
+###
+
+### 6. Xóa chủ đề
+DELETE http://localhost:8080/admin/topics/3
+
+###
+
+### ============================================
+### VIDEO MANAGEMENT APIs
+### ============================================
+
+### 7. Upload video (multipart/form-data)
+### Note: Bạn cần dùng tool như Postman hoặc curl để test upload file
+### Hoặc dùng VS Code REST Client với cú pháp sau:
+
+POST http://localhost:8080/admin/videos/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="example.mp4"
+Content-Type: video/mp4
+
+< /path/to/your/video.mp4
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="word"
+
+elephant
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="topic"
+
+Animals
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+### 8. Lấy tất cả video
+GET http://localhost:8080/admin/videos/all
+
+###
+
+### 9. Lấy video theo ID
+GET http://localhost:8080/admin/videos/1
+
+###
+
+### 10. Duyệt video (DRAFT -> APPROVED)
+PUT http://localhost:8080/admin/videos/1/approve
+
+###
+
+### 11. Cập nhật trạng thái video
+PUT http://localhost:8080/admin/videos/1/status?status=PUBLISHED
+
+###
+
+### 12. Lấy video theo trạng thái
+GET http://localhost:8080/admin/videos/status/APPROVED
+
+###
+
+### 13. Lấy video theo chủ đề
+GET http://localhost:8080/admin/videos/topic/Animals
+
+###
+
+### 14. Xóa video
+DELETE http://localhost:8080/admin/videos/1
+
+###
+
+### ============================================
+### CURL COMMANDS (Alternative)
+### ============================================
+
+### Upload video bằng curl:
+# curl -X POST http://localhost:8080/admin/videos/upload \
+#   -F "file=@/path/to/video.mp4" \
+#   -F "word=elephant" \
+#   -F "topic=Animals"
+
+### ============================================
+### TEST WORKFLOW
+### ============================================
+
+### Workflow 1: Tạo chủ đề và upload video
+# 1. Tạo chủ đề "Animals" (request #1)
+# 2. Upload video với topic "Animals" (request #7)
+# 3. Lấy tất cả video để xem video vừa upload (request #8)
+# 4. Duyệt video (request #10)
+# 5. Kiểm tra video đã được approve (request #9)
+
+###
+
+### Workflow 2: Quản lý chủ đề
+# 1. Tạo nhiều chủ đề (request #1, #2, #3)
+# 2. Lấy danh sách tất cả chủ đề (request #3)
+# 3. Cập nhật tên chủ đề (request #5)
+# 4. Xóa chủ đề không cần thiết (request #6)
+
+###
+
+### ============================================
+### VOCABULARY APIs (Gemini AI)
+### ============================================
+
+### 1. Generate vocabularies for a specific topic
+POST http://localhost:8080/admin/vocabularies/generate?topic=Food&count=10
+
+###
+POST http://localhost:8080/admin/vocabularies/generate?topic=Animals&count=5
+### 2. Generate vocabularies for ALL topics (50 words total)
+# Điều kiện: Database phải có topics trước
+# Ví dụ: 10 topics x 5 words/topic = 50 words
+POST http://localhost:8080/admin/vocabularies/generate-all?countPerTopic=5
+
+###
+
+### 3. Get all vocabularies
+GET http://localhost:8080/admin/vocabularies
+
+###
+
+### 4. Get vocabularies by topic
+GET http://localhost:8080/admin/vocabularies/topic/Animals
+
+###
+
+### 5. Delete a vocabulary
+DELETE http://localhost:8080/admin/vocabularies/1
+
+###
+
+### ============================================
+### VOCABULARY WORKFLOW
+### ============================================
+
+### Workflow: Generate 50 sample vocabularies
+# 1. Kiểm tra topics trong database (request Topics #3)
+# 2. Thêm Gemini API key vào application.properties
+# 3. Generate vocabularies cho tất cả topics (request #2 above)
+# 4. Kiểm tra vocabularies đã tạo (request #3 above)
+
+###

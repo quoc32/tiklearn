@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CRUD Gift - Admin</title>
+    <style>
+      :root{--success:#10b981;--danger:#ef4444;--dark:#1f2937;--gray:#6b7280;--light:#f3f4f6;--border:#e5e7eb}
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--light);color:var(--dark);padding-top:64px}
+      .navbar{background:linear-gradient(135deg,#fff 0%,#f0fdf4 50%,#dcfce7 100%);position:fixed;top:0;left:0;right:0;z-index:1000}
+      .navbar-container{max-width:1400px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:64px}
+      .navbar-brand{display:flex;align-items:center;gap:.75rem;text-decoration:none;color:#059669;font-weight:700}
+      .navbar-brand-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:#fff}
+      .navbar-menu{display:flex;gap:.5rem;list-style:none;align-items:center}
+      .navbar-link{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;border-radius:8px;text-decoration:none;color:#374151}
+      .navbar-link.active{background:var(--success);color:#fff}
+
+      .container{max-width:960px;margin:1.25rem auto;padding:1rem}
+      .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+      .btn{padding:.5rem .9rem;border-radius:6px;border:0;cursor:pointer;font-weight:600}
+      .btn-add{background:#4f46e5;color:#fff}
+      .card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:1rem}
+      .gift-row{display:flex;align-items:center;gap:1rem;padding:.6rem;border-radius:6px;border:1px solid #f0f0f0}
+      .gift-row + .gift-row{margin-top:.6rem}
+      .gift-img{width:80px;height:80px;object-fit:cover;border-radius:8px}
+      .gift-info{flex:1}
+      .gift-actions{display:flex;gap:.5rem}
+      .btn-edit{background:#f59e0b;color:#fff}
+      .btn-delete{background:var(--danger);color:#fff}
+
+      /* modal */
+      .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);align-items:center;justify-content:center;z-index:2000}
+      .modal.show{display:flex}
+      .modal-card{background:#fff;border-radius:8px;padding:1rem;max-width:520px;width:92%}
+      .form-row{margin-bottom:.75rem}
+      label{display:block;font-size:.9rem;color:var(--dark);margin-bottom:.25rem}
+      input[type=text],input[type=number]{width:100%;padding:.5rem;border:1px solid var(--border);border-radius:6px}
+      .flex-end{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.5rem}
+
+      .text-muted{color:var(--gray);font-size:.9rem}
+      .error{color:var(--danger);margin-bottom:.5rem}
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="dashboard.html" class="navbar-brand"><div class="navbar-brand-icon">EL</div><span>English Learning Admin</span></a>
+        <ul class="navbar-menu">
+          <li><a href="dashboard.html" class="navbar-link">📊 Dashboard</a></li>
+          <li><a href="videos.html" class="navbar-link">🎥 Media</a></li>
+          <li><a href="topics.html" class="navbar-link">📚 Topics</a></li>
+          <li><a href="upload.html" class="navbar-link">⬆️ Upload</a></li>
+          <li><a href="crud_gift.html" class="navbar-link active">🎁 CRUD Gift</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <main class="container">
+      <div class="header">
+        <h1 style="font-size:1.25rem">Quản lý quà</h1>
+        <div>
+          <button id="btnOpenAdd" class="btn btn-add">Thêm quà</button>
+        </div>
+      </div>
+
+      <div id="error" class="error" style="display:none"></div>
+
+      <div class="card">
+        <div id="loading" class="text-muted" style="display:none;margin-bottom:.5rem">Đang xử lý...</div>
+        <div id="list" ></div>
+        <div id="empty" class="text-muted" style="display:none">Không có quà nào.</div>
+      </div>
+    </main>
+
+    <!-- Add/Edit Modal -->
+    <div id="modalForm" class="modal" aria-hidden="true">
+      <div class="modal-card">
+        <h3 id="modalTitle">Thêm quà mới</h3>
+        <div class="form-row"><label for="name">Tên quà</label><input id="name" type="text" /></div>
+        <div class="form-row"><label for="cost">Giá (điểm)</label><input id="cost" type="number" min="0" /></div>
+        <div class="form-row"><label for="quantity">Số lượng</label><input id="quantity" type="number" min="0" /></div>
+        <!-- hidden src field (store uploaded path) -->
+        <input id="src" type="hidden" />
+
+        <!-- File chooser + upload -->
+        <div class="form-row" style="display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem">
+          <input id="fileInput" type="file" accept="image/*" style="display:none" />
+          <button id="btnChooseFile" class="btn" style="background:#eef2ff;color:#1e293b">Chọn ảnh</button>
+          <span id="uploadStatus" class="text-muted" style="font-size:.9rem;margin-left:.5rem"></span>
+        </div>
+
+        <img id="preview" class="gift-img" style="display:none;margin-bottom:.5rem" alt="preview" />
+
+        <div class="flex-end">
+          <button id="btnCancel" class="btn" style="background:#e5e7eb">Huỷ</button>
+          <button id="btnSave" class="btn" style="background:var(--success);color:#fff">Lưu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete confirm -->
+    <div id="modalDelete" class="modal" aria-hidden="true">
+      <div class="modal-card">
+        <h3>Xác nhận xóa</h3>
+        <p id="deleteText" class="text-muted">Bạn có chắc muốn xóa ?</p>
+        <div class="flex-end">
+          <button id="btnDelCancel" class="btn" style="background:#e5e7eb">Huỷ</button>
+          <button id="btnDelConfirm" class="btn" style="background:var(--danger);color:#fff">Xóa</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        const BACKEND_BASE = 'http://localhost:8080'
+        const elList = document.getElementById('list')
+        const elEmpty = document.getElementById('empty')
+        const elLoading = document.getElementById('loading')
+        const elError = document.getElementById('error')
+
+        let gifts = []
+        let loading = false
+        let editing = null
+        let deleting = null
+
+        function normalizeSrc(s){
+          if(!s) return s
+          if(s.startsWith('http://')||s.startsWith('https://')) return s
+          return BACKEND_BASE + (s.startsWith('/')? s : '/'+s)
+        }
+
+        async function loadGifts(){
+          setLoading(true)
+          try{
+            const res = await fetch(BACKEND_BASE + '/api/gifts')
+            if(!res.ok) throw new Error('Failed to fetch')
+            const data = await res.json()
+            gifts = data.map(g => ({ id: g.id, name: g.name, cost: g.cost, src: g.src, quantity: g.quantity }))
+            render()
+          }catch(e){
+            console.error(e)
+            setError('Không thể tải danh sách quà từ server')
+            gifts = []
+            render()
+          }finally{setLoading(false)}
+        }
+
+        function setLoading(v){loading=v;elLoading.style.display=v?'block':'none'}
+        function setError(msg){if(msg){elError.textContent=msg;elError.style.display='block'}else{elError.textContent='';elError.style.display='none'}}
+
+        function render(){
+          elList.innerHTML=''
+          if(gifts.length===0){elEmpty.style.display='block';return}
+          elEmpty.style.display='none'
+          gifts.forEach(g=>{
+            const row = document.createElement('div');row.className='gift-row'
+            const img = document.createElement('img');img.src=normalizeSrc(g.src||'');img.alt=g.name;img.className='gift-img'
+            const info = document.createElement('div');info.className='gift-info'
+            const title = document.createElement('div');title.style.fontWeight='600';title.textContent=g.name
+            const meta = document.createElement('div');meta.className='text-muted';meta.textContent = g.cost + ' điểm • Còn: ' + (g.quantity||0)
+            info.appendChild(title);info.appendChild(meta)
+            const actions = document.createElement('div');actions.className='gift-actions'
+            const btnEdit = document.createElement('button');btnEdit.className='btn btn-edit';btnEdit.textContent='Sửa';btnEdit.addEventListener('click',()=>openEdit(g))
+            const btnDel = document.createElement('button');btnDel.className='btn btn-delete';btnDel.textContent='Xóa';btnDel.addEventListener('click',()=>openDelete(g))
+            actions.appendChild(btnEdit);actions.appendChild(btnDel)
+            row.appendChild(img);row.appendChild(info);row.appendChild(actions)
+            elList.appendChild(row)
+          })
+        }
+
+        // Modal elements
+        const modalForm = document.getElementById('modalForm')
+        const modalTitle = document.getElementById('modalTitle')
+        const inputName = document.getElementById('name')
+        const inputCost = document.getElementById('cost')
+        const inputQuantity = document.getElementById('quantity')
+        const inputSrc = document.getElementById('src')
+        const preview = document.getElementById('preview')
+        const btnSave = document.getElementById('btnSave')
+        const btnCancel = document.getElementById('btnCancel')
+        const fileInput = document.getElementById('fileInput')
+        const btnChooseFile = document.getElementById('btnChooseFile')
+        const uploadStatus = document.getElementById('uploadStatus')
+
+        const modalDelete = document.getElementById('modalDelete')
+        const deleteText = document.getElementById('deleteText')
+        const btnDelCancel = document.getElementById('btnDelCancel')
+        const btnDelConfirm = document.getElementById('btnDelConfirm')
+
+        document.getElementById('btnOpenAdd').addEventListener('click',openAdd)
+        btnCancel.addEventListener('click',closeForm)
+        btnChooseFile.addEventListener('click', ()=> fileInput.click())
+        fileInput.addEventListener('change', ()=>{
+          const f = fileInput.files && fileInput.files[0]
+          if(!f) return
+          // show local preview
+          const reader = new FileReader()
+          reader.onload = (e)=>{
+            preview.src = e.target.result
+            preview.style.display = 'block'
+          }
+          reader.readAsDataURL(f)
+          uploadStatus.textContent = ''
+        })
+
+        // upload button removed — uploads happen automatically when saving if a file is selected
+        btnDelCancel.addEventListener('click',()=>{deleting=null;modalDelete.classList.remove('show')})
+
+        function openAdd(){editing=null;modalTitle.textContent='Thêm quà mới';inputName.value='';inputCost.value='';inputQuantity.value='';inputSrc.value='';preview.style.display='none';uploadStatus.textContent='';try{fileInput.value=''}catch(e){};modalForm.classList.add('show');inputName.focus()}
+
+        function openEdit(g){editing=g;modalTitle.textContent='Sửa quà';inputName.value=g.name;inputCost.value=g.cost;inputQuantity.value=g.quantity||0;inputSrc.value=g.src||'';preview.src=normalizeSrc(inputSrc.value);preview.style.display=inputSrc.value?'block':'none';uploadStatus.textContent='';try{fileInput.value=''}catch(e){};modalForm.classList.add('show');inputName.focus()}
+
+        inputSrc.addEventListener('input',()=>{if(inputSrc.value){preview.src=normalizeSrc(inputSrc.value);preview.style.display='block'}else{preview.style.display='none'}})
+
+        btnSave.addEventListener('click', async () => {
+          const name = inputName.value.trim();
+          const cost = Number(inputCost.value);
+          const qty = Number(inputQuantity.value);
+          // src will be from hidden input or from uploaded file
+          let src = inputSrc.value ? inputSrc.value.trim() : '';
+          if (!name || cost <= 0 || qty < 0) { setError('Vui lòng điền đầy đủ thông tin'); return }
+          setError(null); setLoading(true); btnSave.disabled = true
+          try {
+            // if a new file was selected, upload it first
+            if (fileInput.files && fileInput.files[0]) {
+              uploadStatus.textContent = 'Đang tải...'
+              const fd = new FormData(); fd.append('file', fileInput.files[0])
+              const up = await fetch(BACKEND_BASE + '/api/gifts/upload', { method: 'POST', body: fd })
+              if(!up.ok){ const t = await up.text(); throw new Error(t || 'Upload failed') }
+              const ud = await up.json()
+              src = ud.path
+              inputSrc.value = src
+              preview.src = normalizeSrc(src)
+              preview.style.display = 'block'
+              uploadStatus.textContent = 'Hoàn tất'
+              try{ fileInput.value = '' }catch(e){}
+            }
+
+            let res
+            if (editing && editing.id) {
+              // update via API
+              res = await fetch(BACKEND_BASE + '/api/gifts/' + editing.id, {
+                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, cost, src, quantity: qty })
+              })
+              if (!res.ok) throw new Error('Update failed')
+              const updated = await res.json()
+              gifts = gifts.map(g => g.id === updated.id ? { id: updated.id, name: updated.name, cost: updated.cost, src: updated.src, quantity: updated.quantity } : g)
+            } else {
+              // create via API
+              res = await fetch(BACKEND_BASE + '/api/gifts', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, cost, src, quantity: qty })
+              })
+              if (!res.ok) throw new Error('Create failed')
+              const created = await res.json()
+              gifts.unshift({ id: created.id, name: created.name, cost: created.cost, src: created.src, quantity: created.quantity })
+            }
+            render(); closeForm()
+          } catch (err) {
+            console.error(err); setError('Lỗi khi lưu (server)')
+          } finally { setLoading(false); btnSave.disabled = false }
+        })
+
+        function closeForm(){modalForm.classList.remove('show');editing=null}
+
+        // Delete flow
+        function openDelete(g){deleting=g;deleteText.textContent = 'Bạn có chắc muốn xóa ' + g.name + ' không? Hành động này không thể hoàn tác.';modalDelete.classList.add('show')}
+        btnDelConfirm.addEventListener('click',async ()=>{
+          if(!deleting) return
+          setLoading(true)
+          btnDelConfirm.disabled = true
+          try{
+            const res = await fetch(BACKEND_BASE + '/api/gifts/' + deleting.id, { method: 'DELETE' })
+            if(!(res.status === 204 || res.ok)) throw new Error('Delete failed')
+            gifts = gifts.filter(x=> x.id !== deleting.id)
+            deleting = null
+            modalDelete.classList.remove('show')
+            render()
+          }catch(e){
+            console.error(e)
+            setError('Không thể xóa (server)')
+          }finally{ setLoading(false); btnDelConfirm.disabled = false }
+        })
+
+        // initial load
+        loadGifts()
+      })()
+    </script>
+  </body>
+</html>

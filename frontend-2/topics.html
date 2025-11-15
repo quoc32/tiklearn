@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Topics Management - Admin Panel</title>
+
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --primary-hover: #4338ca;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --dark: #1f2937;
+        --gray: #6b7280;
+        --light-gray: #f3f4f6;
+        --border: #e5e7eb;
+        --white: #ffffff;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--light-gray);
+        color: var(--dark);
+        line-height: 1.6;
+        padding-top: 64px;
+      }
+
+      /* NAVBAR */
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #f0fdf4 50%,
+          #dcfce7 100%
+        );
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+      }
+
+      .navbar.navbar-hidden {
+        transform: translateY(-100%);
+      }
+
+      .navbar.navbar-scrolled {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      .navbar-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #059669;
+        text-decoration: none;
+        transition: transform 0.2s ease;
+      }
+
+      .navbar-brand:hover {
+        transform: scale(1.05);
+      }
+
+      .navbar-brand-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .navbar-menu {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+      }
+
+      .navbar-item {
+        position: relative;
+      }
+
+      .navbar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+      }
+
+      .navbar-link:hover {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #059669;
+      }
+
+      .navbar-link.active {
+        background-color: #10b981;
+        color: white;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+      }
+
+      .navbar-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        background-color: var(--danger-color);
+        color: white;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .navbar-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-left: 1px solid rgba(16, 185, 129, 0.2);
+        margin-left: 0.5rem;
+      }
+
+      .user-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #374151;
+      }
+
+      .user-role {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      /* MAIN CONTENT */
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+
+      .page-header {
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      /* ALERT */
+      .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: none;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      .alert.show {
+        display: block;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      /* STATS CARDS */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .stat-icon.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+      }
+
+      .stat-icon.primary {
+        background: rgba(79, 70, 229, 0.1);
+        color: var(--primary-color);
+      }
+
+      .stat-info h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-info p {
+        color: var(--gray);
+        font-size: 0.875rem;
+      }
+
+      /* TOPICS GRID */
+      .topics-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+      }
+
+      .topics-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .topics-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+      }
+
+      .search-input {
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        width: 300px;
+      }
+
+      .search-input:focus {
+        outline: none;
+        border-color: var(--success-color);
+      }
+
+      .topics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .topic-card {
+        background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+
+      .topic-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--success-color);
+      }
+
+      .topic-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+      }
+
+      .topic-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .topic-icon {
+        font-size: 2rem;
+      }
+
+      .topic-meta {
+        display: flex;
+        gap: 1rem;
+        color: var(--gray);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+      }
+
+      .topic-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .topic-vocab-count {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+        padding: 0.25rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+
+      .btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+      }
+
+      .btn-view {
+        flex: 1;
+        background: var(--success-color);
+        color: white;
+      }
+
+      .btn-view:hover {
+        background: #059669;
+      }
+
+      .btn-generate {
+        background: var(--warning-color);
+        color: white;
+      }
+
+      .btn-generate:hover {
+        background: #d97706;
+      }
+
+      .btn-primary {
+        background: var(--success-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #059669;
+      }
+
+      .btn-edit {
+        flex: 1;
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .btn-edit:hover {
+        background: var(--primary-hover);
+      }
+
+      .btn-delete {
+        background: var(--danger-color);
+        color: white;
+      }
+
+      .btn-delete:hover {
+        background: #dc2626;
+      }
+
+      /* EMPTY STATE */
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+      }
+
+      .empty-state-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .empty-state-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .empty-state-text {
+        color: var(--gray);
+        margin-bottom: 1.5rem;
+      }
+
+      /* MODAL */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.show {
+        display: flex;
+      }
+
+      .modal-content {
+        background: white;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--gray);
+        padding: 0.5rem;
+        line-height: 1;
+      }
+
+      .modal-close:hover {
+        color: var(--dark);
+      }
+
+      .modal-body {
+        padding: 1.5rem;
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      /* Vocabulary List */
+      .vocab-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .vocab-item {
+        background: var(--light-gray);
+        padding: 1rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--success-color);
+      }
+
+      .vocab-word {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .vocab-definition {
+        color: var(--gray);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .vocab-example {
+        color: var(--dark);
+        font-style: italic;
+        font-size: 0.875rem;
+        padding: 0.5rem;
+        background: white;
+        border-radius: 4px;
+      }
+
+      .vocab-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 0.5rem;
+      }
+
+      .btn-small {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .form-label .required {
+        color: var(--danger-color);
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--success-color);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      }
+
+      .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--gray);
+        border: 2px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--success-color);
+        color: var(--success-color);
+      }
+
+      /* LOADING */
+      .loading {
+        text-align: center;
+        padding: 4rem 2rem;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid var(--border);
+        border-top-color: var(--success-color);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .search-input {
+          width: 100%;
+        }
+
+        .topics-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="dashboard.html" class="navbar-brand">
+          <div class="navbar-brand-icon">EL</div>
+          <span>English Learning Admin</span>
+        </a>
+
+        <ul class="navbar-menu">
+          <li class="navbar-item">
+            <a href="dashboard.html" class="navbar-link">
+              <span>📊</span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="videos.html" class="navbar-link">
+              <span>🎥</span>
+              <span>Media</span>
+              <span class="navbar-badge" id="pendingCount">0</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="topics.html" class="navbar-link active">
+              <span>📚</span>
+              <span>Topics</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="upload.html" class="navbar-link">
+              <span>⬆️</span>
+              <span>Upload</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="genImage.html" class="navbar-link">
+              <span>🎨</span>
+              <span>Gen Image</span>
+            </a>
+          </li>
+
+          <li class="navbar-item">
+            <a href="crud_gift.html" class="navbar-link" data-page="crud_gift">
+              <span>🎁</span>
+              <span>CRUD Gift</span>
+            </a>
+          </li>
+
+          <li class="navbar-item navbar-user">
+            <div class="user-avatar" id="userAvatar">AD</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">Admin User</span>
+              <span class="user-role" id="userRole">Administrator</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-container">
+      <div class="page-header">
+        <h1 class="page-title">Topics Management</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <span>➕</span>
+            Add New Topic
+          </button>
+        </div>
+      </div>
+
+      <div id="alertMessage" class="alert"></div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon success">📚</div>
+          <div class="stat-info">
+            <h3 id="totalTopics">0</h3>
+            <p>Total Topics</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon primary">🎥</div>
+          <div class="stat-info">
+            <h3 id="totalVideos">0</h3>
+            <p>Total Videos</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topics Container -->
+      <div class="topics-container">
+        <div class="topics-header">
+          <h2 class="topics-title">All Topics</h2>
+          <input
+            type="text"
+            class="search-input"
+            id="searchInput"
+            placeholder="🔍 Search topics..."
+          />
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading" id="loadingState">
+          <div class="spinner"></div>
+          <p>Loading topics...</p>
+        </div>
+
+        <!-- Topics Grid -->
+        <div class="topics-grid" id="topicsGrid"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none">
+          <div class="empty-state-icon">📚</div>
+          <h3 class="empty-state-title">No Topics Found</h3>
+          <p class="empty-state-text">
+            Create your first topic to organize video content.
+          </p>
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <span>➕</span>
+            Add New Topic
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Create/Edit Topic Modal -->
+    <div class="modal" id="topicModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">Add New Topic</h2>
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="topicForm">
+            <div class="form-group">
+              <label for="topicName" class="form-label">
+                Topic Name <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="topicName"
+                class="form-input"
+                placeholder="Enter topic name (e.g., Animals, Food, Colors)"
+                required
+              />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="closeModal()"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            id="saveBtn"
+            onclick="saveTopic()"
+          >
+            <span>💾</span>
+            Save Topic
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- View Vocabularies Modal -->
+    <div class="modal" id="vocabModal">
+      <div class="modal-content" style="max-width: 800px">
+        <div class="modal-header">
+          <h2 class="modal-title" id="vocabModalTitle">Vocabularies</h2>
+          <button class="modal-close" onclick="closeVocabModal()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="vocabList" class="vocab-list"></div>
+          <div id="vocabLoading" class="loading" style="display: none">
+            <div class="spinner"></div>
+            <p>Loading vocabularies...</p>
+          </div>
+          <div
+            id="vocabEmpty"
+            style="display: none; text-align: center; padding: 2rem"
+          >
+            <p style="color: var(--gray)">
+              No vocabularies found for this topic.
+            </p>
+            <button
+              class="btn btn-primary"
+              style="margin-top: 1rem"
+              onclick="generateVocabForCurrentTopic()"
+            >
+              <span>🤖</span>
+              Generate Vocabularies
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            onclick="closeVocabModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE_URL = "http://localhost:8080";
+      let allTopics = [];
+      let currentEditingId = null;
+      let currentViewingTopic = null;
+      let topicVocabCounts = {};
+
+      // Load user info
+      function loadUserInfo() {
+        try {
+          const userStr = localStorage.getItem("user");
+          if (userStr) {
+            const user = JSON.parse(userStr);
+            const userAvatar = document.getElementById("userAvatar");
+            const userName = document.getElementById("userName");
+            const userRole = document.getElementById("userRole");
+
+            if (userAvatar)
+              userAvatar.textContent = user.username
+                .substring(0, 2)
+                .toUpperCase();
+            if (userName) userName.textContent = user.username;
+            if (userRole) userRole.textContent = user.role;
+          }
+        } catch (error) {
+          console.error("Error loading user info:", error);
+        }
+      }
+
+      // Load all topics
+      async function loadTopics() {
+        const loadingState = document.getElementById("loadingState");
+        const topicsGrid = document.getElementById("topicsGrid");
+        const emptyState = document.getElementById("emptyState");
+
+        loadingState.style.display = "block";
+        topicsGrid.innerHTML = "";
+        emptyState.style.display = "none";
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/admin/topics`);
+          allTopics = await response.json();
+
+          loadingState.style.display = "none";
+
+          if (allTopics.length === 0) {
+            emptyState.style.display = "block";
+          } else {
+            displayTopics(allTopics);
+            updateStats();
+          }
+        } catch (error) {
+          console.error("Error loading topics:", error);
+          loadingState.style.display = "none";
+          showAlert("Failed to load topics", "error");
+        }
+      }
+
+      // Display topics
+      function displayTopics(topics) {
+        const topicsGrid = document.getElementById("topicsGrid");
+        const emptyState = document.getElementById("emptyState");
+
+        topicsGrid.innerHTML = "";
+
+        if (topics.length === 0) {
+          emptyState.style.display = "block";
+          return;
+        }
+
+        emptyState.style.display = "none";
+
+        topics.forEach((topic) => {
+          const card = createTopicCard(topic);
+          topicsGrid.appendChild(card);
+        });
+      }
+
+      // Create topic card
+      function createTopicCard(topic) {
+        const card = document.createElement("div");
+        card.className = "topic-card";
+
+        const createdDate = new Date(topic.createdAt).toLocaleDateString(
+          "vi-VN"
+        );
+
+        const vocabCount = topicVocabCounts[topic.name] || 0;
+
+        card.innerHTML = `
+          <div class="topic-card-header">
+            <div>
+              <div class="topic-name">${topic.name}</div>
+              <div class="topic-meta">
+                <span>📅 ${createdDate}</span>
+                <span>ID: ${topic.id}</span>
+              </div>
+              <div style="margin-top: 0.5rem">
+                <span class="topic-vocab-count">📝 ${vocabCount} vocabularies</span>
+              </div>
+            </div>
+            <div class="topic-icon">📚</div>
+          </div>
+          <div class="topic-actions">
+            <button class="btn btn-view" onclick="viewVocabularies('${topic.name}')">
+              👁️ View
+            </button>
+            <button class="btn btn-generate" onclick="generateVocab('${topic.name}')">
+              🤖 Gen
+            </button>
+          </div>
+          <div class="topic-actions" style="margin-top: 0.5rem">
+            <button class="btn btn-edit" onclick="editTopic(${topic.id})">
+              ✏️ Edit
+            </button>
+            <button class="btn btn-delete" onclick="deleteTopic(${topic.id})">
+              🗑️
+            </button>
+          </div>
+        `;
+
+        return card;
+      }
+
+      // Load vocabulary counts for all topics
+      async function loadVocabCounts() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/admin/vocabularies`);
+          const vocabularies = await response.json();
+
+          // Count vocabularies per topic
+          topicVocabCounts = {};
+          vocabularies.forEach((vocab) => {
+            if (!topicVocabCounts[vocab.topic]) {
+              topicVocabCounts[vocab.topic] = 0;
+            }
+            topicVocabCounts[vocab.topic]++;
+          });
+        } catch (error) {
+          console.error("Error loading vocab counts:", error);
+        }
+      }
+
+      // Update stats
+      async function updateStats() {
+        try {
+          // Update topics count
+          document.getElementById("totalTopics").textContent = allTopics.length;
+
+          // Get total videos count
+          const response = await fetch(`${API_BASE_URL}/admin/videos`);
+          const videos = await response.json();
+          document.getElementById("totalVideos").textContent = videos.length;
+
+          // Update pending count in navbar
+          const draftVideos = videos.filter((v) => v.status === "DRAFT");
+          const badge = document.getElementById("pendingCount");
+          if (badge) {
+            badge.textContent = draftVideos.length;
+            badge.style.display =
+              draftVideos.length === 0 ? "none" : "inline-flex";
+          }
+
+          // Load vocabulary counts
+          await loadVocabCounts();
+        } catch (error) {
+          console.error("Error updating stats:", error);
+        }
+      }
+
+      // Search functionality
+      document.getElementById("searchInput").addEventListener("input", (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+
+        if (searchTerm === "") {
+          displayTopics(allTopics);
+        } else {
+          const filtered = allTopics.filter((topic) =>
+            topic.name.toLowerCase().includes(searchTerm)
+          );
+          displayTopics(filtered);
+        }
+      });
+
+      // Open create modal
+      function openCreateModal() {
+        currentEditingId = null;
+        document.getElementById("modalTitle").textContent = "Add New Topic";
+        document.getElementById("topicName").value = "";
+        document.getElementById("saveBtn").innerHTML =
+          "<span>💾</span> Save Topic";
+        document.getElementById("topicModal").classList.add("show");
+      }
+
+      // Edit topic
+      function editTopic(id) {
+        const topic = allTopics.find((t) => t.id === id);
+        if (!topic) return;
+
+        currentEditingId = id;
+        document.getElementById("modalTitle").textContent = "Edit Topic";
+        document.getElementById("topicName").value = topic.name;
+        document.getElementById("saveBtn").innerHTML =
+          "<span>💾</span> Update Topic";
+        document.getElementById("topicModal").classList.add("show");
+      }
+
+      // Save topic (create or update)
+      async function saveTopic() {
+        const topicName = document.getElementById("topicName").value.trim();
+
+        if (!topicName) {
+          showAlert("Please enter a topic name", "error");
+          return;
+        }
+
+        const saveBtn = document.getElementById("saveBtn");
+        saveBtn.disabled = true;
+
+        try {
+          let response;
+
+          if (currentEditingId) {
+            // Update existing topic
+            response = await fetch(
+              `${API_BASE_URL}/admin/topics/${currentEditingId}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name: topicName }),
+              }
+            );
+          } else {
+            // Create new topic
+            response = await fetch(`${API_BASE_URL}/admin/topics`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name: topicName }),
+            });
+          }
+
+          if (response.ok) {
+            showAlert(
+              `Topic ${currentEditingId ? "updated" : "created"} successfully!`,
+              "success"
+            );
+            closeModal();
+            await loadTopics();
+          } else {
+            const error = await response.json();
+            showAlert(error.message || "Operation failed", "error");
+          }
+        } catch (error) {
+          console.error("Error saving topic:", error);
+          showAlert("Error saving topic", "error");
+        } finally {
+          saveBtn.disabled = false;
+        }
+      }
+
+      // Delete topic
+      async function deleteTopic(id) {
+        if (
+          !confirm(
+            "Are you sure you want to delete this topic? This action cannot be undone."
+          )
+        )
+          return;
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/admin/topics/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            showAlert("Topic deleted successfully!", "success");
+            await loadTopics();
+          } else {
+            const error = await response.json();
+            showAlert(error.message || "Failed to delete topic", "error");
+          }
+        } catch (error) {
+          console.error("Error deleting topic:", error);
+          showAlert("Error deleting topic", "error");
+        }
+      }
+
+      // Close modal
+      function closeModal() {
+        document.getElementById("topicModal").classList.remove("show");
+        currentEditingId = null;
+      }
+
+      // View vocabularies for a topic
+      async function viewVocabularies(topicName) {
+        currentViewingTopic = topicName;
+        document.getElementById(
+          "vocabModalTitle"
+        ).textContent = `Vocabularies - ${topicName}`;
+        document.getElementById("vocabModal").classList.add("show");
+
+        const vocabList = document.getElementById("vocabList");
+        const vocabLoading = document.getElementById("vocabLoading");
+        const vocabEmpty = document.getElementById("vocabEmpty");
+
+        vocabList.innerHTML = "";
+        vocabList.style.display = "none";
+        vocabLoading.style.display = "block";
+        vocabEmpty.style.display = "none";
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/admin/vocabularies/topic/${encodeURIComponent(
+              topicName
+            )}`
+          );
+          const vocabularies = await response.json();
+
+          vocabLoading.style.display = "none";
+
+          if (vocabularies.length === 0) {
+            vocabEmpty.style.display = "block";
+          } else {
+            vocabList.style.display = "flex";
+            vocabularies.forEach((vocab) => {
+              const vocabItem = createVocabItem(vocab);
+              vocabList.appendChild(vocabItem);
+            });
+          }
+        } catch (error) {
+          console.error("Error loading vocabularies:", error);
+          vocabLoading.style.display = "none";
+          showAlert("Failed to load vocabularies", "error");
+        }
+      }
+
+      // Create vocabulary item
+      function createVocabItem(vocab) {
+        const item = document.createElement("div");
+        item.className = "vocab-item";
+
+        item.innerHTML = `
+          <div class="vocab-word">${vocab.word}</div>
+          <div class="vocab-definition"><strong>Definition:</strong> ${
+            vocab.definition || "N/A"
+          }</div>
+          <div class="vocab-example"><strong>Example:</strong> ${
+            vocab.exampleSentence || "N/A"
+          }</div>
+          <div class="vocab-actions">
+            <button class="btn btn-delete btn-small" onclick="deleteVocab(${
+              vocab.id
+            })">
+              🗑️ Delete
+            </button>
+          </div>
+        `;
+
+        return item;
+      }
+
+      // Generate vocabularies for a topic
+      async function generateVocab(topicName) {
+        if (!confirm(`Generate 5 vocabularies for "${topicName}"?`)) return;
+
+        try {
+          showAlert("Generating vocabularies... Please wait.", "success");
+
+          const response = await fetch(
+            `${API_BASE_URL}/admin/vocabularies/generate?topic=${encodeURIComponent(
+              topicName
+            )}&count=5`,
+            { method: "POST" }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            showAlert(result.message, "success");
+            await loadVocabCounts();
+            displayTopics(allTopics); // Refresh cards with new counts
+          } else {
+            showAlert(result.message, "error");
+          }
+        } catch (error) {
+          console.error("Error generating vocabularies:", error);
+          showAlert("Failed to generate vocabularies", "error");
+        }
+      }
+
+      // Generate for current viewing topic (from empty state)
+      function generateVocabForCurrentTopic() {
+        if (currentViewingTopic) {
+          closeVocabModal();
+          generateVocab(currentViewingTopic);
+        }
+      }
+
+      // Delete vocabulary
+      async function deleteVocab(id) {
+        if (!confirm("Delete this vocabulary?")) return;
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/admin/vocabularies/${id}`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            showAlert("Vocabulary deleted", "success");
+            // Refresh the current view
+            if (currentViewingTopic) {
+              viewVocabularies(currentViewingTopic);
+            }
+            await loadVocabCounts();
+            displayTopics(allTopics);
+          } else {
+            showAlert(result.message, "error");
+          }
+        } catch (error) {
+          console.error("Error deleting vocabulary:", error);
+          showAlert("Failed to delete vocabulary", "error");
+        }
+      }
+
+      // Close vocabulary modal
+      function closeVocabModal() {
+        document.getElementById("vocabModal").classList.remove("show");
+        currentViewingTopic = null;
+      }
+
+      // Show alert
+      function showAlert(message, type = "error") {
+        const alertMessage = document.getElementById("alertMessage");
+        alertMessage.textContent = message;
+        alertMessage.className = `alert alert-${type} show`;
+        setTimeout(() => {
+          alertMessage.classList.remove("show");
+        }, 5000);
+      }
+
+      // Navbar scroll
+      let lastScrollTop = 0;
+      const navbar = document.querySelector(".navbar");
+
+      window.addEventListener("scroll", () => {
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop > 50) {
+          navbar.classList.add("navbar-scrolled");
+        } else {
+          navbar.classList.remove("navbar-scrolled");
+        }
+
+        if (Math.abs(scrollTop - lastScrollTop) > 10) {
+          if (scrollTop > lastScrollTop && scrollTop > 100) {
+            navbar.classList.add("navbar-hidden");
+          } else {
+            navbar.classList.remove("navbar-hidden");
+          }
+          lastScrollTop = scrollTop;
+        }
+      });
+
+      // Close modal on outside click
+      document.getElementById("topicModal").addEventListener("click", (e) => {
+        if (e.target.id === "topicModal") {
+          closeModal();
+        }
+      });
+
+      // Form submit on Enter key
+      document.getElementById("topicName").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          saveTopic();
+        }
+      });
+
+      // Initialize
+      window.addEventListener("DOMContentLoaded", () => {
+        loadUserInfo();
+        loadTopics();
+      });
+    </script>
+  </body>
+</html>

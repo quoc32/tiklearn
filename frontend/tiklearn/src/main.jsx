@@ -1,3 +1,5 @@
+// src/main.jsx (ĐÃ SỬA)
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
