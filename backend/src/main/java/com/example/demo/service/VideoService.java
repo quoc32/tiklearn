@@ -25,7 +25,7 @@ public class VideoService {
     private static final String VIDEO_UPLOAD_DIR = "src/main/resources/static/videos/";
     private static final String IMAGE_UPLOAD_DIR = "src/main/resources/static/photos/";
 
-    public Video uploadVideo(MultipartFile file, String word, String topic, String description) throws IOException {
+    public Video uploadVideo(MultipartFile file, String word, String topic, String description, String difficultLevel) throws IOException {
         // Determine media type based on file content type
         String contentType = file.getContentType();
         String mediaType = "VIDEO";
@@ -52,7 +52,7 @@ public class VideoService {
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         // Create video entity with media type
-        Video video = new Video(word, topic, description, uniqueFilename, mediaType);
+        Video video = new Video(word, topic, description, uniqueFilename, mediaType, difficultLevel);
         return videoRepository.save(video);
     }
 

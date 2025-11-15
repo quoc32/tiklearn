@@ -25,6 +25,9 @@ public class Video {
     @Column(name = "media_type", nullable = false)
     private String mediaType; // "VIDEO" or "IMAGE"
 
+    @Column(name = "difficult_level", nullable = false)
+    private String difficultLevel; // "EASY", "MEDIUM", "HARD"
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private VideoStatus status;
@@ -52,13 +55,14 @@ public class Video {
         this.status = VideoStatus.DRAFT;
     }
 
-    public Video(String word, String topic, String description, String videoPath, String mediaType) {
+    public Video(String word, String topic, String description, String videoPath, String mediaType, String difficultLevel) {
         this.word = word;
         this.topic = topic;
         this.videoPath = videoPath;
         this.mediaType = mediaType;
         this.status = VideoStatus.DRAFT;
         this.description = description;
+        this.difficultLevel = difficultLevel;
     }
 
     // Getters and Setters
@@ -108,6 +112,14 @@ public class Video {
 
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
+    }
+
+    public String getDifficultLevel() {
+        return difficultLevel;
+    }
+
+    public void setDifficultLevel(String difficultLevel) {
+        this.difficultLevel = difficultLevel;
     }
 
     public VideoStatus getStatus() {

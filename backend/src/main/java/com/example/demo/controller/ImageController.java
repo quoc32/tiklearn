@@ -58,6 +58,7 @@ public class ImageController {
                     body.put("word", video.getWord());
                     body.put("description", video.getDescription());
                     body.put("topic", video.getTopic());
+                    body.put("difficultLevel", video.getDifficultLevel());
                 }
 
                 return org.springframework.http.ResponseEntity

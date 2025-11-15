@@ -765,43 +765,55 @@
             <!-- Video Information Section -->
             <div class="form-section">
               <h3 class="section-title">
-                <span>📝</span>
-                Media Information
+              <span>📝</span>
+              Media Information
               </h3>
 
               <div class="form-group">
-                <label for="word" class="form-label">
-                  Vocabulary Word <span class="required">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="word"
-                  name="word"
-                  class="form-input"
-                  placeholder="Enter vocabulary word (e.g., elephant)"
-                  required
-                />
+              <label for="word" class="form-label">
+                Vocabulary Word <span class="required">*</span>
+              </label>
+              <input
+                type="text"
+                id="word"
+                name="word"
+                class="form-input"
+                placeholder="Enter vocabulary word (e.g., elephant)"
+                required
+              />
               </div>
 
               <div class="form-group">
-                <label for="topic" class="form-label">
-                  Topic <span class="required">*</span>
-                </label>
-                <select id="topic" name="topic" class="form-select" required>
-                  <option value="">Select a topic...</option>
-                </select>
+              <label for="topic" class="form-label">
+                Topic <span class="required">*</span>
+              </label>
+              <select id="topic" name="topic" class="form-select" required>
+                <option value="">Select a topic...</option>
+              </select>
               </div>
 
               <div class="form-group">
-                <label for="description" class="form-label">
-                  Description (Optional)
-                </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  class="form-textarea"
-                  placeholder="Enter video description..."
-                ></textarea>
+              <label for="difficulty" class="form-label">
+                Độ khó <span class="required">*</span>
+              </label>
+              <select id="difficulty" name="difficulty" class="form-select" required>
+                <option value="">Chọn độ khó...</option>
+                <option value="EASY">EASY</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="HARD">HARD</option>
+              </select>
+              </div>
+
+              <div class="form-group">
+              <label for="description" class="form-label">
+                Description (Optional)
+              </label>
+              <textarea
+                id="description"
+                name="description"
+                class="form-textarea"
+                placeholder="Enter video description..."
+              ></textarea>
               </div>
             </div>
 
@@ -967,8 +979,8 @@
               if (!apiKey) {
               apiKey = prompt("Nhập Google Generative Language API key (key=...):");
               if (!apiKey) {
-                showAlert("API key required", "error");
-                return;
+              showAlert("API key required", "error");
+              return;
               }
               localStorage.setItem("GGL_API_KEY", apiKey);
               }
@@ -983,48 +995,48 @@
               const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=${encodeURIComponent(apiKey)}`;
 
               const body = {
-                contents: [
+              contents: [
+              {
+                parts: [
                 {
-                  parts: [
-                  {
-                    inline_data: {
-                    mime_type: selectedFile.type,
-                    data: b64
-                    }
-                  },
-                  {
-                    text: "Hãy mô tả nội dung bức ảnh này thật ngắn gọn theo format sau: '<Từ vựng tiếng việt>| <Từ vựng tiếng anh>| <Mô tả ngắn tiếng việt>| <Mô tả ngắn tiếng anh, có chứa Từ vựng tiếng anh>'"
-                  }
-                  ]
+                inline_data: {
+                mime_type: selectedFile.type,
+                data: b64
+                }
+                },
+                {
+                text: "Hãy mô tả nội dung bức ảnh này thật ngắn gọn theo format sau: '<Từ vựng tiếng việt>| <Từ vựng tiếng anh>| <Mô tả ngắn tiếng việt>| <Mô tả ngắn tiếng anh, có chứa Từ vựng tiếng anh>| <Độ khó của từ vựng Tiếng Anh 'EASY', 'MEDIUM', 'HARD'>'"
                 }
                 ]
+              }
+              ]
               };
 
               const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body)
               });
 
               const json = await res.json();
 
               if (!res.ok) {
-                console.error("API error:", json);
-                showAlert("Lỗi từ API: " + (json.error?.message || res.statusText), "error");
-                generateOutput.style.display = "block";
-                generateOutput.textContent = JSON.stringify(json, null, 2);
-                showApplyButton(false);
+              console.error("API error:", json);
+              showAlert("Lỗi từ API: " + (json.error?.message || res.statusText), "error");
+              generateOutput.style.display = "block";
+              generateOutput.textContent = JSON.stringify(json, null, 2);
+              showApplyButton(false);
               } else {
-                const text = extractText(json) || JSON.stringify(json, null, 2);
-                generateOutput.style.display = "block";
-                generateOutput.textContent = text;
-                showAlert("Mô tả ảnh đã trả về", "success");
-                const parsed = parseGeneratedText(text);
-                showApplyButton(!!parsed);
-                if (!parsed) {
-                // If parse failed, keep the raw output visible so user can edit/copy
-                showAlert("Không thể phân tích định dạng trả về tự động. Vui lòng chỉnh sửa thủ công.", "warning");
-                }
+              const text = extractText(json) || JSON.stringify(json, null, 2);
+              generateOutput.style.display = "block";
+              generateOutput.textContent = text;
+              showAlert("Mô tả ảnh đã trả về", "success");
+              const parsed = parseGeneratedText(text);
+              showApplyButton(!!parsed);
+              if (!parsed) {
+              // If parse failed, keep the raw output visible so user can edit/copy
+              showAlert("Không thể phân tích định dạng trả về tự động. Vui lòng chỉnh sửa thủ công.", "warning");
+              }
               }
               } catch (err) {
               console.error(err);
@@ -1040,8 +1052,8 @@
               const text = generateOutput.textContent || "";
               const parsed = parseGeneratedText(text);
               if (!parsed) {
-                showAlert("Không tìm thấy nội dung hợp lệ để áp dụng", "error");
-                return;
+              showAlert("Không tìm thấy nội dung hợp lệ để áp dụng", "error");
+              return;
               }
 
               const wordField = document.getElementById("word");
@@ -1053,6 +1065,24 @@
               }
               if (descField) {
               descField.value = `${parsed.vnDesc} - ${parsed.enDesc}`;
+              }
+
+              // Try to extract difficulty from the raw text (5th '|' part) and set select
+              const difficultySelect = document.getElementById("difficulty");
+              if (difficultySelect) {
+              const parts = text.split("|").map(s => s.trim());
+              // prefer 5th part, fallback to last part if more/less parts
+              let diffRaw = parts.length >= 5 ? parts[4] : parts[parts.length - 1];
+              if (diffRaw) {
+                diffRaw = diffRaw.toUpperCase().replace(/[^A-Z]/g, "");
+                // match EASY, MEDIUM, HARD
+                const allowed = ["EASY", "MEDIUM", "HARD"];
+                const matched = allowed.find(d => diffRaw.includes(d));
+                if (matched) {
+                difficultySelect.value = matched;
+                difficultySelect.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+              }
               }
 
               // update preview description if needed (no dedicated preview field exists for description)
@@ -1288,6 +1318,7 @@
         const word = wordInput.value.trim();
         const topic = topicSelect.value;
         const description = descriptionInput.value;
+        const difficulty = document.getElementById("difficulty").value;
 
         if (!word || !topic) {
           showAlert("Please fill in all required fields", "error");
@@ -1302,6 +1333,7 @@
         formData.append("word", word);
         formData.append("topic", topic);
         formData.append("description", description);
+        formData.append("difficultLevel", difficulty);
 
         try {
           const xhr = new XMLHttpRequest();

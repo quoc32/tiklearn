@@ -29,13 +29,14 @@ public class VideoController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("word") String word,
             @RequestParam("topic") String topic,
+            @RequestParam("difficultLevel") String difficultLevel,
             @RequestParam("description") String description) {
         try {
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("File is empty");
             }
 
-            Video video = videoService.uploadVideo(file, word, topic, description);
+            Video video = videoService.uploadVideo(file, word, topic, description, difficultLevel);
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
