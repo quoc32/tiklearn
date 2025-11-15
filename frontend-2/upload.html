@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload Video - Admin Panel</title>
+
+    <!-- NAVBAR CSS -->
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --primary-hover: #4338ca;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --dark: #1f2937;
+        --gray: #6b7280;
+        --light-gray: #f3f4f6;
+        --border: #e5e7eb;
+        --white: #ffffff;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--light-gray);
+        color: var(--dark);
+        line-height: 1.6;
+        padding-top: 64px;
+      }
+
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #f0fdf4 50%,
+          #dcfce7 100%
+        );
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+      }
+
+      .navbar.navbar-hidden {
+        transform: translateY(-100%);
+      }
+
+      .navbar.navbar-scrolled {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      .navbar-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #059669;
+        text-decoration: none;
+        transition: transform 0.2s ease;
+      }
+
+      .navbar-brand:hover {
+        transform: scale(1.05);
+      }
+
+      .navbar-brand-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .navbar-brand:hover .navbar-brand-icon {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        transform: rotate(5deg);
+      }
+
+      .navbar-menu {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+      }
+
+      .navbar-item {
+        position: relative;
+      }
+
+      .navbar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .navbar-link::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(16, 185, 129, 0.1),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+
+      .navbar-link:hover::before {
+        left: 100%;
+      }
+
+      .navbar-link:hover {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        transform: translateY(-2px);
+      }
+
+      .navbar-link.active {
+        background-color: #10b981;
+        color: white;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+      }
+
+      .navbar-icon {
+        font-size: 1.125rem;
+      }
+
+      .navbar-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        background-color: var(--danger-color);
+        color: white;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .navbar-toggle {
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+      }
+
+      .navbar-toggle span {
+        width: 24px;
+        height: 2px;
+        background-color: #059669;
+        transition: all 0.3s;
+        border-radius: 2px;
+      }
+
+      .navbar-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-left: 1px solid rgba(16, 185, 129, 0.2);
+        margin-left: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .navbar-user:hover {
+        background-color: rgba(16, 185, 129, 0.1);
+        border-radius: 8px;
+      }
+
+      .user-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+      }
+
+      .navbar-user:hover .user-avatar {
+        transform: scale(1.1);
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #374151;
+      }
+
+      .user-role {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      @media (max-width: 768px) {
+        .navbar-toggle {
+          display: flex;
+        }
+
+        .navbar-menu {
+          position: absolute;
+          top: 64px;
+          left: 0;
+          right: 0;
+          background: linear-gradient(
+            135deg,
+            #ffffff 0%,
+            #f0fdf4 50%,
+            #dcfce7 100%
+          );
+          flex-direction: column;
+          padding: 1rem;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+          display: none;
+        }
+
+        .navbar-menu.active {
+          display: flex;
+        }
+
+        .navbar-user {
+          border-left: none;
+          border-top: 1px solid rgba(16, 185, 129, 0.2);
+          margin-left: 0;
+          margin-top: 0.5rem;
+          padding-top: 1rem;
+        }
+
+        .user-info {
+          display: none;
+        }
+      }
+
+      /* ============================================
+       UPLOAD PAGE STYLES
+    ============================================ */
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+
+      .page-header {
+        margin-bottom: 2rem;
+      }
+
+      .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .page-description {
+        color: var(--gray);
+        font-size: 1rem;
+      }
+
+      .upload-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
+      }
+
+      .upload-form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+      }
+
+      .form-section {
+        margin-bottom: 2rem;
+      }
+
+      .form-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .form-label .required {
+        color: var(--danger-color);
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--success-color);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      .file-upload-area {
+        border: 2px dashed var(--border);
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s;
+        cursor: pointer;
+        background: var(--light-gray);
+      }
+
+      .file-upload-area:hover {
+        border-color: var(--success-color);
+        background: rgba(16, 185, 129, 0.05);
+      }
+
+      .file-upload-area.dragover {
+        border-color: var(--success-color);
+        background: rgba(16, 185, 129, 0.1);
+      }
+
+      .file-upload-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .file-upload-text {
+        color: var(--gray);
+        font-size: 0.875rem;
+      }
+
+      .file-upload-text strong {
+        color: var(--success-color);
+        cursor: pointer;
+      }
+
+      .file-input {
+        display: none;
+      }
+
+      .file-info {
+        display: none;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+      }
+
+      .file-info.show {
+        display: block;
+      }
+
+      .file-name {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .file-size {
+        color: var(--gray);
+        font-size: 0.875rem;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-secondary {
+        background: white;
+        color: var(--gray);
+        border: 2px solid var(--border);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--success-color);
+        color: var(--success-color);
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .preview-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 80px;
+      }
+
+      .preview-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 1.5rem;
+      }
+
+      .video-preview {
+        width: 100%;
+        border-radius: 8px;
+        background: var(--dark);
+        margin-bottom: 1rem;
+        display: none;
+      }
+
+      .video-preview.show {
+        display: block;
+      }
+
+      .preview-info {
+        background: var(--light-gray);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+
+      .preview-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .preview-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .preview-label {
+        color: var(--gray);
+      }
+
+      .preview-value {
+        color: var(--dark);
+        font-weight: 600;
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: none;
+      }
+
+      .alert.show {
+        display: block;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert-success {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+
+      .alert-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      .progress-container {
+        display: none;
+        margin-top: 1rem;
+      }
+
+      .progress-container.show {
+        display: block;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #059669);
+        transition: width 0.3s;
+        width: 0%;
+      }
+
+      .progress-text {
+        margin-top: 0.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        color: var(--gray);
+      }
+
+      @media (max-width: 1024px) {
+        .upload-container {
+          grid-template-columns: 1fr;
+        }
+
+        .preview-card {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="dashboard.html" class="navbar-brand">
+          <div class="navbar-brand-icon">EL</div>
+          <span>English Learning Admin</span>
+        </a>
+
+        <button class="navbar-toggle" id="navbarToggle">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <ul class="navbar-menu" id="navbarMenu">
+          <li class="navbar-item">
+            <a href="dashboard.html" class="navbar-link" data-page="dashboard">
+              <span class="navbar-icon">📊</span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="videos.html" class="navbar-link" data-page="videos">
+              <span class="navbar-icon">🎥</span>
+              <span>Media</span>
+              <span class="navbar-badge" id="pendingCount">0</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="topics.html" class="navbar-link" data-page="topics">
+              <span class="navbar-icon">📚</span>
+              <span>Topics</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="upload.html" class="navbar-link active" data-page="upload">
+              <span class="navbar-icon">⬆️</span>
+              <span>Upload</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="analytics.html" class="navbar-link" data-page="analytics">
+              <span class="navbar-icon">📈</span>
+              <span>Analytics</span>
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="settings.html" class="navbar-link" data-page="settings">
+              <span class="navbar-icon">⚙️</span>
+              <span>Settings</span>
+            </a>
+          </li>
+
+          <li class="navbar-item navbar-user">
+            <div class="user-avatar" id="userAvatar">AD</div>
+            <div class="user-info">
+              <span class="user-name" id="userName">Admin User</span>
+              <span class="user-role" id="userRole">Administrator</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-container">
+      <div class="page-header">
+        <h1 class="page-title">Upload Media</h1>
+        <p class="page-description">
+          Upload images or videos for English learning with vocabulary and topic
+        </p>
+      </div>
+
+      <div id="alertMessage" class="alert"></div>
+
+      <div class="upload-container">
+        <!-- Upload Form -->
+        <div class="upload-form-card">
+          <form id="uploadForm">
+            <!-- Video Upload Section -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <span>🖼️</span>
+                Media File
+              </h3>
+
+              <div class="file-upload-area" id="dropArea">
+                <div class="file-upload-icon">📁</div>
+                <div class="file-upload-text">
+                  <strong>Click to browse</strong> or drag and drop<br />
+                  <small
+                    >Images (JPG, PNG, GIF) or Videos (MP4, MOV) - Max
+                    100MB</small
+                  >
+                </div>
+                <input
+                  type="file"
+                  id="videoFile"
+                  class="file-input"
+                  accept="video/*,image/*"
+                  required
+                />
+              </div>
+
+              <div class="file-info" id="fileInfo">
+                <div class="file-name" id="fileName"></div>
+                <div class="file-size" id="fileSize"></div>
+              </div>
+
+              <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Uploading: 0%</div>
+              </div>
+            </div>
+
+            <!-- Video Information Section -->
+            <div class="form-section">
+              <h3 class="section-title">
+                <span>📝</span>
+                Media Information
+              </h3>
+
+              <div class="form-group">
+                <label for="word" class="form-label">
+                  Vocabulary Word <span class="required">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="word"
+                  name="word"
+                  class="form-input"
+                  placeholder="Enter vocabulary word (e.g., elephant)"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="topic" class="form-label">
+                  Topic <span class="required">*</span>
+                </label>
+                <select id="topic" name="topic" class="form-select" required>
+                  <option value="">Select a topic...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="description" class="form-label">
+                  Description (Optional)
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  class="form-textarea"
+                  placeholder="Enter video description..."
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="btn-group">
+              <button type="submit" class="btn btn-primary" id="uploadBtn">
+                <span>⬆️</span>
+                Upload Media
+              </button>
+              <button type="button" class="btn btn-secondary" id="resetBtn">
+                <span>🔄</span>
+                Reset Form
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Preview Card -->
+        <div class="preview-card">
+          <h3 class="preview-title">Preview</h3>
+
+          <video
+            id="videoPreview"
+            class="video-preview"
+            controls
+            controlsList="nodownload"
+            style="display: none"
+          ></video>
+
+          <img
+            id="imagePreview"
+            class="video-preview"
+            style="display: none"
+            alt="Image preview"
+          />
+
+          <div
+            style="
+              background: #fef3c7;
+              padding: 0.75rem;
+              border-radius: 8px;
+              margin-bottom: 1rem;
+              font-size: 0.875rem;
+              color: #92400e;
+              display: none;
+            "
+            id="audioHint"
+          >
+            <strong>💡 Mẹo:</strong> Nếu video không có tiếng, hãy click vào
+            biểu tượng 🔊 trên video player để bật âm thanh.
+          </div>
+
+          <div class="preview-info">
+            <div class="preview-item">
+              <span class="preview-label">Word:</span>
+              <span class="preview-value" id="previewWord">-</span>
+            </div>
+            <div class="preview-item">
+              <span class="preview-label">Topic:</span>
+              <span class="preview-value" id="previewTopic">-</span>
+            </div>
+            <div class="preview-item">
+              <span class="preview-label">File Size:</span>
+              <span class="preview-value" id="previewSize">-</span>
+            </div>
+            <div class="preview-item">
+              <span class="preview-label">Status:</span>
+              <span class="preview-value" id="previewStatus">DRAFT</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const API_BASE_URL = "http://localhost:8080";
+
+      // Navbar functionality
+      const navbarToggle = document.getElementById("navbarToggle");
+      const navbarMenu = document.getElementById("navbarMenu");
+
+      if (navbarToggle) {
+        navbarToggle.addEventListener("click", () => {
+          navbarMenu.classList.toggle("active");
+        });
+      }
+
+      // Smart navbar scroll
+      let lastScrollTop = 0;
+      const navbar = document.querySelector(".navbar");
+      const scrollThreshold = 10;
+
+      window.addEventListener("scroll", () => {
+        const scrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop > 50) {
+          navbar.classList.add("navbar-scrolled");
+        } else {
+          navbar.classList.remove("navbar-scrolled");
+        }
+
+        if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
+          if (scrollTop > lastScrollTop && scrollTop > 100) {
+            navbar.classList.add("navbar-hidden");
+          } else {
+            navbar.classList.remove("navbar-hidden");
+          }
+          lastScrollTop = scrollTop;
+        }
+      });
+
+      // Update pending count
+      async function updatePendingCount() {
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/admin/videos/status/DRAFT`,
+            {
+              credentials: "include",
+            }
+          );
+          const videos = await response.json();
+          const badge = document.getElementById("pendingCount");
+          if (badge) {
+            badge.textContent = videos.length;
+            badge.style.display = videos.length === 0 ? "none" : "inline-flex";
+          }
+        } catch (error) {
+          console.error("Error fetching pending videos:", error);
+        }
+      }
+
+      // Load topics
+      async function loadTopics() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/admin/topics`, {
+            credentials: "include",
+          });
+          const topics = await response.json();
+          const select = document.getElementById("topic");
+
+          topics.forEach((topic) => {
+            const option = document.createElement("option");
+            option.value = topic.name;
+            option.textContent = topic.name;
+            select.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error loading topics:", error);
+          showAlert("Failed to load topics", "error");
+        }
+      }
+
+      // Elements
+      const uploadForm = document.getElementById("uploadForm");
+      const videoFile = document.getElementById("videoFile");
+      const dropArea = document.getElementById("dropArea");
+      const fileInfo = document.getElementById("fileInfo");
+      const fileName = document.getElementById("fileName");
+      const fileSize = document.getElementById("fileSize");
+      const wordInput = document.getElementById("word");
+      const topicSelect = document.getElementById("topic");
+      const uploadBtn = document.getElementById("uploadBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const alertMessage = document.getElementById("alertMessage");
+      const progressContainer = document.getElementById("progressContainer");
+      const progressFill = document.getElementById("progressFill");
+      const progressText = document.getElementById("progressText");
+      const videoPreview = document.getElementById("videoPreview");
+      const previewWord = document.getElementById("previewWord");
+      const previewTopic = document.getElementById("previewTopic");
+      const previewSize = document.getElementById("previewSize");
+
+      let selectedFile = null;
+
+      // Click to browse
+      dropArea.addEventListener("click", () => {
+        videoFile.click();
+      });
+
+      // Drag and drop
+      dropArea.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropArea.classList.add("dragover");
+      });
+
+      dropArea.addEventListener("dragleave", () => {
+        dropArea.classList.remove("dragover");
+      });
+
+      dropArea.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropArea.classList.remove("dragover");
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          videoFile.files = files;
+          handleFileSelect(files[0]);
+        }
+      });
+
+      // File selection
+      videoFile.addEventListener("change", (e) => {
+        if (e.target.files.length > 0) {
+          handleFileSelect(e.target.files[0]);
+        }
+      });
+
+      // Handle file selection
+      function handleFileSelect(file) {
+        const isVideo = file.type.startsWith("video/");
+        const isImage = file.type.startsWith("image/");
+
+        if (!isVideo && !isImage) {
+          showAlert("Please select a video or image file", "error");
+          return;
+        }
+
+        if (file.size > 100 * 1024 * 1024) {
+          // 100MB
+          showAlert("File size must be less than 100MB", "error");
+          return;
+        }
+
+        selectedFile = file;
+        fileName.textContent = file.name;
+        fileSize.textContent = formatFileSize(file.size);
+        fileInfo.classList.add("show");
+
+        // Preview
+        const url = URL.createObjectURL(file);
+        const videoPreview = document.getElementById("videoPreview");
+        const imagePreview = document.getElementById("imagePreview");
+        const audioHint = document.getElementById("audioHint");
+
+        if (isVideo) {
+          // Show video preview
+          videoPreview.src = url;
+          videoPreview.style.display = "block";
+          videoPreview.volume = 1.0;
+          imagePreview.style.display = "none";
+          if (audioHint) audioHint.style.display = "block";
+        } else {
+          // Show image preview
+          imagePreview.src = url;
+          imagePreview.style.display = "block";
+          videoPreview.style.display = "none";
+          if (audioHint) audioHint.style.display = "none";
+        }
+
+        previewSize.textContent = formatFileSize(file.size);
+      }
+
+      // Update preview
+      wordInput.addEventListener("input", (e) => {
+        previewWord.textContent = e.target.value || "-";
+      });
+
+      topicSelect.addEventListener("change", (e) => {
+        previewTopic.textContent = e.target.value || "-";
+      });
+
+      // Format file size
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return (
+          Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i]
+        );
+      }
+
+      // Show alert
+      function showAlert(message, type = "error") {
+        alertMessage.textContent = message;
+        alertMessage.className = `alert alert-${type} show`;
+        setTimeout(() => {
+          alertMessage.classList.remove("show");
+        }, 5000);
+      }
+
+      // Upload form submission
+      uploadForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!selectedFile) {
+          showAlert("Please select a video file", "error");
+          return;
+        }
+
+        const word = wordInput.value.trim();
+        const topic = topicSelect.value;
+
+        if (!word || !topic) {
+          showAlert("Please fill in all required fields", "error");
+          return;
+        }
+
+        uploadBtn.disabled = true;
+        progressContainer.classList.add("show");
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("word", word);
+        formData.append("topic", topic);
+
+        try {
+          const xhr = new XMLHttpRequest();
+
+          xhr.upload.addEventListener("progress", (e) => {
+            if (e.lengthComputable) {
+              const percentComplete = (e.loaded / e.total) * 100;
+              progressFill.style.width = percentComplete + "%";
+              progressText.textContent = `Uploading: ${Math.round(
+                percentComplete
+              )}%`;
+            }
+          });
+
+          xhr.addEventListener("load", () => {
+            if (xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText);
+              showAlert(
+                response.message || "Media uploaded successfully!",
+                "success"
+              );
+              resetForm();
+              updatePendingCount();
+            } else {
+              const error = JSON.parse(xhr.responseText);
+              showAlert(error.message || "Upload failed", "error");
+            }
+            uploadBtn.disabled = false;
+            progressContainer.classList.remove("show");
+            progressFill.style.width = "0%";
+          });
+
+          xhr.addEventListener("error", () => {
+            showAlert("Network error occurred", "error");
+            uploadBtn.disabled = false;
+            progressContainer.classList.remove("show");
+          });
+
+          xhr.open("POST", `${API_BASE_URL}/admin/videos/upload`);
+          xhr.send(formData);
+        } catch (error) {
+          console.error("Upload error:", error);
+          showAlert("Upload failed: " + error.message, "error");
+          uploadBtn.disabled = false;
+          progressContainer.classList.remove("show");
+        }
+      });
+
+      // Reset form
+      resetBtn.addEventListener("click", resetForm);
+
+      function resetForm() {
+        uploadForm.reset();
+        selectedFile = null;
+        fileInfo.classList.remove("show");
+
+        const videoPreview = document.getElementById("videoPreview");
+        const imagePreview = document.getElementById("imagePreview");
+        videoPreview.style.display = "none";
+        videoPreview.src = "";
+        imagePreview.style.display = "none";
+        imagePreview.src = "";
+
+        previewWord.textContent = "-";
+        previewTopic.textContent = "-";
+        previewSize.textContent = "-";
+        progressContainer.classList.remove("show");
+        progressFill.style.width = "0%";
+
+        const audioHint = document.getElementById("audioHint");
+        if (audioHint) {
+          audioHint.style.display = "none";
+        }
+      }
+
+      // Check authentication
+      function loadUserInfo() {
+        try {
+          // Load user info from localStorage
+          const userStr = localStorage.getItem("user");
+          if (userStr) {
+            const user = JSON.parse(userStr);
+            const userAvatar = document.getElementById("userAvatar");
+            const userName = document.getElementById("userName");
+            const userRole = document.getElementById("userRole");
+
+            if (userAvatar)
+              userAvatar.textContent = user.username
+                .substring(0, 2)
+                .toUpperCase();
+            if (userName) userName.textContent = user.username;
+            if (userRole) userRole.textContent = user.role;
+          }
+        } catch (error) {
+          console.error("Error loading user info:", error);
+        }
+      }
+
+      // Initialize
+      window.addEventListener("DOMContentLoaded", () => {
+        loadUserInfo();
+        loadTopics();
+        updatePendingCount();
+        setInterval(updatePendingCount, 30000);
+      });
+    </script>
+  </body>
+</html>

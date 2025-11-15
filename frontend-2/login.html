@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - English Learning</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #10b981;
+        --primary-hover: #059669;
+        --danger-color: #ef4444;
+        --dark: #1f2937;
+        --gray: #6b7280;
+        --light-gray: #f3f4f6;
+        --border: #e5e7eb;
+        --white: #ffffff;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #f0fdf4 50%,
+          #dcfce7 100%
+        );
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+
+      .login-container {
+        width: 100%;
+        max-width: 420px;
+        animation: slideUp 0.5s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .login-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        padding: 2.5rem;
+      }
+
+      .logo-container {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .logo {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 28px;
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+      }
+
+      .login-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .login-subtitle {
+        color: var(--gray);
+        font-size: 0.95rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.2s;
+        background: var(--white);
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      }
+
+      .form-input.error {
+        border-color: var(--danger-color);
+      }
+
+      .password-container {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        color: var(--gray);
+        font-size: 1.25rem;
+      }
+
+      .toggle-password:hover {
+        color: var(--dark);
+      }
+
+      .remember-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .remember-me input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+
+      .remember-me label {
+        font-size: 0.875rem;
+        color: var(--gray);
+        cursor: pointer;
+      }
+
+      .forgot-password {
+        font-size: 0.875rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .forgot-password:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+      }
+
+      .btn-login {
+        width: 100%;
+        padding: 0.875rem;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+      }
+
+      .btn-login:active {
+        transform: translateY(0);
+      }
+
+      .btn-login:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .btn-login.loading {
+        position: relative;
+        color: transparent;
+      }
+
+      .btn-login.loading::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -10px;
+        margin-top: -10px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+        display: none;
+        animation: slideDown 0.3s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .alert.show {
+        display: block;
+      }
+
+      .alert-error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+      }
+
+      .alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+      }
+
+      .divider {
+        text-align: center;
+        margin: 1.5rem 0;
+        position: relative;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .divider span {
+        background: white;
+        padding: 0 1rem;
+        position: relative;
+        color: var(--gray);
+        font-size: 0.875rem;
+      }
+
+      .demo-accounts {
+        background: var(--light-gray);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+      }
+
+      .demo-accounts h4 {
+        font-size: 0.875rem;
+        color: var(--dark);
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+      }
+
+      .demo-account {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        background: white;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .demo-account:last-child {
+        margin-bottom: 0;
+      }
+
+      .demo-account span {
+        color: var(--gray);
+      }
+
+      .demo-account code {
+        background: var(--light-gray);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-family: monospace;
+        color: var(--dark);
+      }
+
+      .use-btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+
+      .use-btn:hover {
+        background: var(--primary-hover);
+      }
+
+      @media (max-width: 480px) {
+        .login-card {
+          padding: 2rem 1.5rem;
+        }
+
+        .login-title {
+          font-size: 1.5rem;
+        }
+
+        .remember-forgot {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <!-- Logo & Title -->
+        <div class="logo-container">
+          <div class="logo">EL</div>
+          <h1 class="login-title">Admin Login</h1>
+          <p class="login-subtitle">Enter your credentials to continue</p>
+        </div>
+
+        <!-- Alert Message -->
+        <div id="alertMessage" class="alert"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username" class="form-label">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              class="form-input"
+              placeholder="Enter your username"
+              required
+              autocomplete="username"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <div class="password-container">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input"
+                placeholder="Enter your password"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" class="toggle-password" id="togglePassword">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <div class="remember-forgot">
+            <div class="remember-me">
+              <input type="checkbox" id="rememberMe" name="rememberMe" />
+              <label for="rememberMe">Remember me</label>
+            </div>
+            <a href="#" class="forgot-password">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn-login" id="loginBtn">Login</button>
+        </form>
+
+        <!-- Demo Accounts -->
+        <div class="demo-accounts">
+          <h4>🔑 Demo Accounts (For Testing)</h4>
+          <div class="demo-account">
+            <div>
+              <span>Admin:</span> <code>admin</code> / <code>admin123</code>
+            </div>
+            <button
+              type="button"
+              class="use-btn"
+              onclick="useAccount('admin', 'admin123')"
+            >
+              Use
+            </button>
+          </div>
+          <div class="demo-account">
+            <div>
+              <span>User:</span> <code>user</code> / <code>user123</code>
+            </div>
+            <button
+              type="button"
+              class="use-btn"
+              onclick="useAccount('user', 'user123')"
+            >
+              Use
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE_URL = "http://localhost:8080";
+
+      // Elements
+      const loginForm = document.getElementById("loginForm");
+      const usernameInput = document.getElementById("username");
+      const passwordInput = document.getElementById("password");
+      const loginBtn = document.getElementById("loginBtn");
+      const togglePassword = document.getElementById("togglePassword");
+      const alertMessage = document.getElementById("alertMessage");
+      const rememberMe = document.getElementById("rememberMe");
+
+      // Toggle password visibility
+      togglePassword.addEventListener("click", () => {
+        const type =
+          passwordInput.getAttribute("type") === "password"
+            ? "text"
+            : "password";
+        passwordInput.setAttribute("type", type);
+        togglePassword.textContent = type === "password" ? "👁️" : "🙈";
+      });
+
+      // Use demo account
+      function useAccount(username, password) {
+        usernameInput.value = username;
+        passwordInput.value = password;
+        showAlert("Demo account credentials filled!", "success");
+      }
+
+      // Show alert
+      function showAlert(message, type = "error") {
+        alertMessage.textContent = message;
+        alertMessage.className = `alert alert-${type} show`;
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+          alertMessage.classList.remove("show");
+        }, 5000);
+      }
+
+      // Handle form submission
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+          showAlert("Please enter both username and password", "error");
+          return;
+        }
+
+        // Show loading state
+        loginBtn.disabled = true;
+        loginBtn.classList.add("loading");
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Important for session cookies
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            showAlert("Login successful! Redirecting...", "success");
+
+            // Save username if remember me is checked
+            if (rememberMe.checked) {
+              localStorage.setItem("rememberedUsername", username);
+            } else {
+              localStorage.removeItem("rememberedUsername");
+            }
+
+            // Save user info
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            // Redirect to upload page after 1 second
+            setTimeout(() => {
+              window.location.href = "upload.html";
+            }, 1000);
+          } else {
+            showAlert(
+              data.message || "Login failed. Please try again.",
+              "error"
+            );
+            loginBtn.disabled = false;
+            loginBtn.classList.remove("loading");
+          }
+        } catch (error) {
+          console.error("Login error:", error);
+          showAlert(
+            "Connection error. Please make sure the server is running.",
+            "error"
+          );
+          loginBtn.disabled = false;
+          loginBtn.classList.remove("loading");
+        }
+      });
+
+      // Check for remembered username on page load
+      window.addEventListener("DOMContentLoaded", () => {
+        const rememberedUsername = localStorage.getItem("rememberedUsername");
+        if (rememberedUsername) {
+          usernameInput.value = rememberedUsername;
+          rememberMe.checked = true;
+        }
+      });
+
+      // Enter key support for password field
+      passwordInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          loginForm.dispatchEvent(new Event("submit"));
+        }
+      });
+    </script>
+  </body>
+</html>

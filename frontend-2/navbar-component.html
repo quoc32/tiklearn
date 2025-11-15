@@ -1,0 +1,448 @@
+<!-- ============================================
+     NAVBAR COMPONENT - Import this into other pages
+     Usage: Include CSS in <head> and HTML + JS in <body>
+============================================ -->
+
+<!-- NAVBAR CSS - Copy to <head> or external CSS file -->
+<style>
+  :root {
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --dark: #1f2937;
+    --gray: #6b7280;
+    --light-gray: #f3f4f6;
+    --border: #e5e7eb;
+    --white: #ffffff;
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--light-gray);
+    color: var(--dark);
+    line-height: 1.6;
+  }
+
+  .navbar {
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 50%, #dcfce7 100%);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+  }
+
+  .navbar.navbar-hidden {
+    transform: translateY(-100%);
+  }
+
+  .navbar.navbar-scrolled {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .navbar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+  }
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #059669;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+
+  .navbar-brand:hover {
+    transform: scale(1.05);
+  }
+
+  .navbar-brand-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .navbar-brand:hover .navbar-brand-icon {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: rotate(5deg);
+  }
+
+  .navbar-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    list-style: none;
+  }
+
+  .navbar-item {
+    position: relative;
+  }
+
+  .navbar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    color: #374151;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .navbar-link::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(16, 185, 129, 0.1),
+      transparent
+    );
+    transition: left 0.5s ease;
+  }
+
+  .navbar-link:hover::before {
+    left: 100%;
+  }
+
+  .navbar-link:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    transform: translateY(-2px);
+  }
+
+  .navbar-link.active {
+    background-color: #10b981;
+    color: white;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+  }
+
+  .navbar-icon {
+    font-size: 1.125rem;
+  }
+
+  .navbar-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .navbar-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+
+  .navbar-toggle span {
+    width: 24px;
+    height: 2px;
+    background-color: #059669;
+    transition: all 0.3s;
+    border-radius: 2px;
+  }
+
+  .navbar-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-left: 1px solid rgba(16, 185, 129, 0.2);
+    margin-left: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .navbar-user:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-radius: 8px;
+  }
+
+  .user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+
+  .navbar-user:hover .user-avatar {
+    transform: scale(1.1);
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .user-role {
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
+  /* Add padding to body to prevent content from going under fixed navbar */
+  body {
+    padding-top: 64px;
+  }
+
+  @media (max-width: 768px) {
+    .navbar-toggle {
+      display: flex;
+    }
+
+    .navbar-menu {
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #f0fdf4 50%,
+        #dcfce7 100%
+      );
+      flex-direction: column;
+      padding: 1rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+      display: none;
+    }
+
+    .navbar-menu.active {
+      display: flex;
+    }
+
+    .navbar-user {
+      border-left: none;
+      border-top: 1px solid rgba(16, 185, 129, 0.2);
+      margin-left: 0;
+      margin-top: 0.5rem;
+      padding-top: 1rem;
+    }
+
+    .user-info {
+      display: none;
+    }
+  }
+</style>
+
+<!-- NAVBAR HTML - Copy to <body> -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo & Brand -->
+    <a href="index.html" class="navbar-brand">
+      <div class="navbar-brand-icon">EL</div>
+      <span>English Learning Admin</span>
+    </a>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="navbar-toggle" id="navbarToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Navigation Menu -->
+    <ul class="navbar-menu" id="navbarMenu">
+      <li class="navbar-item">
+        <a href="dashboard.html" class="navbar-link" data-page="dashboard">
+          <span class="navbar-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="navbar-item">
+        <a href="videos.html" class="navbar-link" data-page="videos">
+          <span class="navbar-icon">🎥</span>
+          <span>Media</span>
+          <span class="navbar-badge" id="pendingCount">0</span>
+        </a>
+      </li>
+      <li class="navbar-item">
+        <a href="topics.html" class="navbar-link" data-page="topics">
+          <span class="navbar-icon">📚</span>
+          <span>Topics</span>
+        </a>
+      </li>
+      <li class="navbar-item">
+        <a href="upload.html" class="navbar-link" data-page="upload">
+          <span class="navbar-icon">⬆️</span>
+          <span>Upload Video</span>
+        </a>
+      </li>
+      <li class="navbar-item">
+        <a href="analytics.html" class="navbar-link" data-page="analytics">
+          <span class="navbar-icon">📈</span>
+          <span>Analytics</span>
+        </a>
+      </li>
+      <li class="navbar-item">
+        <a href="settings.html" class="navbar-link" data-page="settings">
+          <span class="navbar-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+      </li>
+
+      <!-- User Profile -->
+      <li class="navbar-item navbar-user">
+        <div class="user-avatar">AD</div>
+        <div class="user-info">
+          <span class="user-name">Admin User</span>
+          <span class="user-role">Administrator</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!-- NAVBAR JAVASCRIPT - Copy before </body> -->
+<script>
+  // Smart navbar - hide on scroll down, show on scroll up
+  let lastScrollTop = 0;
+  const navbar = document.querySelector(".navbar");
+  const scrollThreshold = 10;
+
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Add shadow when scrolled
+    if (scrollTop > 50) {
+      navbar.classList.add("navbar-scrolled");
+    } else {
+      navbar.classList.remove("navbar-scrolled");
+    }
+
+    // Hide/show navbar based on scroll direction
+    if (Math.abs(scrollTop - lastScrollTop) > scrollThreshold) {
+      if (scrollTop > lastScrollTop && scrollTop > 100) {
+        // Scrolling down & past 100px
+        navbar.classList.add("navbar-hidden");
+      } else {
+        // Scrolling up
+        navbar.classList.remove("navbar-hidden");
+      }
+      lastScrollTop = scrollTop;
+    }
+  });
+
+  // Mobile menu toggle
+  const navbarToggle = document.getElementById("navbarToggle");
+  const navbarMenu = document.getElementById("navbarMenu");
+
+  if (navbarToggle) {
+    navbarToggle.addEventListener("click", () => {
+      navbarMenu.classList.toggle("active");
+    });
+  }
+
+  // Highlight active page
+  const currentPage =
+    window.location.pathname.split("/").pop() || "dashboard.html";
+  const navbarLinks = document.querySelectorAll(".navbar-link[data-page]");
+
+  navbarLinks.forEach((link) => {
+    const href = link.getAttribute("href");
+    if (href === currentPage) {
+      link.classList.add("active");
+    }
+
+    // Navigation handling
+    link.addEventListener("click", () => {
+      // Close mobile menu
+      if (navbarMenu) {
+        navbarMenu.classList.remove("active");
+      }
+    });
+  });
+
+  // Fetch pending videos count for badge
+  async function updatePendingCount() {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/admin/videos/status/DRAFT"
+      );
+      const videos = await response.json();
+      const badge = document.getElementById("pendingCount");
+      if (badge) {
+        badge.textContent = videos.length;
+        if (videos.length === 0) {
+          badge.style.display = "none";
+        } else {
+          badge.style.display = "inline-flex";
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching pending videos:", error);
+    }
+  }
+
+  // Initial load
+  updatePendingCount();
+
+  // Update every 30 seconds
+  setInterval(updatePendingCount, 30000);
+</script>
