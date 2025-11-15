@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Image Generation - Admin Panel</title>
+
+    <style>
+      :root {
+        --primary-color: #4f46e5;
+        --primary-hover: #4338ca;
+        --success-color: #10b981;
+        --danger-color: #ef4444;
+        --warning-color: #f59e0b;
+        --dark: #1f2937;
+        --gray: #6b7280;
+        --light-gray: #f3f4f6;
+        --border: #e5e7eb;
+        --white: #ffffff;
+        --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background-color: var(--light-gray);
+        color: var(--dark);
+        line-height: 1.6;
+        padding-top: 64px;
+      }
+
+      /* NAVBAR */
+      .navbar {
+        background: linear-gradient(
+          135deg,
+          #ffffff 0%,
+          #f0fdf4 50%,
+          #dcfce7 100%
+        );
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+      }
+
+      .navbar-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 64px;
+      }
+
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #059669;
+        text-decoration: none;
+      }
+
+      .navbar-brand-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .navbar-menu {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+      }
+
+      .navbar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        color: #374151;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .navbar-link:hover {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #059669;
+      }
+
+      .navbar-link.active {
+        background-color: #10b981;
+        color: white;
+      }
+
+      .navbar-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-left: 1px solid rgba(16, 185, 129, 0.2);
+        margin-left: 0.5rem;
+      }
+
+      .user-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #374151;
+      }
+
+      .user-role {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      /* MAIN CONTENT */
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+
+      .header {
+        margin-bottom: 2rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .header p {
+        color: var(--gray);
+        font-size: 1rem;
+      }
+
+      /* GENERATOR SECTION */
+      .generator-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .form-input,
+      .form-textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s;
+      }
+
+      .form-input:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--success-color);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+      }
+
+      .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: inherit;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .btn-full {
+        width: 100%;
+      }
+
+      /* LOADING */
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .loading.show {
+        display: block;
+      }
+
+      .spinner {
+        border: 4px solid var(--border);
+        border-top: 4px solid var(--success-color);
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* RESULT SECTION */
+      .result-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        margin-bottom: 2rem;
+        display: none;
+      }
+
+      .result-container.show {
+        display: block;
+      }
+
+      .result-image {
+        width: 100%;
+        max-width: 512px;
+        height: auto;
+        border-radius: 12px;
+        margin: 0 auto;
+        display: block;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .result-info {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: var(--light-gray);
+        border-radius: 8px;
+      }
+
+      .result-info p {
+        margin-bottom: 0.5rem;
+      }
+
+      .result-info strong {
+        color: var(--dark);
+      }
+
+      /* ACTION BUTTONS */
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        justify-content: center;
+      }
+
+      .btn-accept {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-accept:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      }
+
+      .btn-reject {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .btn-reject:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+      }
+
+      /* MODAL */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 2000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s;
+      }
+
+      .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+        width: 90%;
+        max-width: 500px;
+        animation: slideUp 0.3s;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-header h3 {
+        font-size: 1.5rem;
+        color: var(--dark);
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--gray);
+      }
+
+      .modal-close:hover {
+        color: var(--dark);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* ALERT */
+      .alert {
+        position: fixed;
+        top: 80px;
+        right: 1.5rem;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: var(--shadow-lg);
+        z-index: 1100;
+        opacity: 0;
+        transform: translateX(400px);
+        transition: all 0.3s;
+      }
+
+      .alert.show {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .alert-success {
+        background-color: #10b981;
+        color: white;
+      }
+
+      .alert-error {
+        background-color: #ef4444;
+        color: white;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 768px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .gallery-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="upload.html" class="navbar-brand">
+          <div class="navbar-brand-icon">TL</div>
+          <span>TikLearn Admin</span>
+        </a>
+
+        <ul class="navbar-menu">
+          <li class="navbar-item">
+            <a href="upload.html" class="navbar-link"> 📤 Upload </a>
+          </li>
+          <li class="navbar-item">
+            <a href="videos.html" class="navbar-link"> 🎬 Media </a>
+          </li>
+          <li class="navbar-item">
+            <a href="topics.html" class="navbar-link"> 📚 Topics </a>
+          </li>
+          <li class="navbar-item">
+            <a href="genImage.html" class="navbar-link active">
+              🎨 Gen Image
+            </a>
+          </li>
+          <li class="navbar-item">
+            <a href="#" class="navbar-link" onclick="logout(); return false;">
+              🚪 Logout
+            </a>
+          </li>
+        </ul>
+
+        <div class="navbar-user">
+          <div class="user-avatar" id="userAvatar">G</div>
+          <div class="user-info">
+            <span class="user-name" id="userName">Guest</span>
+            <span class="user-role" id="userRole">User</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-container">
+      <!-- HEADER -->
+      <div class="header">
+        <h1>🎨 AI Image Generation</h1>
+        <p>
+          Create stunning images from text prompts using Stable Diffusion AI
+        </p>
+      </div>
+
+      <!-- ALERT -->
+      <div id="alertMessage" class="alert"></div>
+
+      <!-- GENERATOR SECTION -->
+      <div class="generator-container">
+        <form id="generateForm" onsubmit="generateImage(event)">
+          <div class="form-group">
+            <label class="form-label" for="prompt">
+              Image Prompt <span style="color: var(--danger-color)">*</span>
+            </label>
+            <textarea
+              id="prompt"
+              name="prompt"
+              class="form-textarea"
+              placeholder="E.g., a cat, sunset, mountain"
+              required
+            ></textarea>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="enhancePrompt()"
+              style="margin-top: 0.5rem"
+            >
+              ✨ Enhance with AI
+            </button>
+          </div>
+
+          <!-- Enhanced Prompt Display -->
+          <div
+            id="enhancedPromptContainer"
+            style="
+              display: none;
+              background: #f0fdf4;
+              padding: 1rem;
+              border-radius: 8px;
+              margin-bottom: 1rem;
+              border: 2px solid #10b981;
+            "
+          >
+            <h4 style="margin-bottom: 0.5rem; color: #059669">
+              🤖 AI Enhanced Prompt (JSON)
+            </h4>
+            <pre
+              id="enhancedPromptJson"
+              style="
+                background: white;
+                padding: 1rem;
+                border-radius: 4px;
+                overflow-x: auto;
+                font-size: 0.875rem;
+                margin: 0;
+              "
+            ></pre>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-full"
+            id="generateBtn"
+          >
+            ✨ Generate Image
+          </button>
+        </form>
+
+        <!-- LOADING -->
+        <div id="loading" class="loading">
+          <div class="spinner"></div>
+          <p>Generating your image... This may take 10-30 seconds</p>
+        </div>
+      </div>
+
+      <!-- RESULT SECTION -->
+      <div id="resultContainer" class="result-container">
+        <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem">
+          Generated Image
+        </h2>
+        <img id="resultImage" class="result-image" alt="Generated image" />
+
+        <div class="action-buttons">
+          <button class="btn-reject" onclick="rejectImage()">❌ Reject</button>
+          <button class="btn-accept" onclick="acceptImage()">✅ Accept</button>
+        </div>
+      </div>
+
+      <!-- MODAL FOR IMAGE INFO -->
+      <div id="imageModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Save Generated Image</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+          </div>
+
+          <form id="saveImageForm" onsubmit="saveImage(event)">
+            <div class="form-group">
+              <label class="form-label" for="modalWord">
+                Word/Title <span style="color: var(--danger-color)">*</span>
+              </label>
+              <input
+                type="text"
+                id="modalWord"
+                class="form-input"
+                placeholder="E.g., Cat"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="modalTopic">
+                Topic <span style="color: var(--danger-color)">*</span>
+              </label>
+              <select id="modalTopic" class="form-input" required>
+                <option value="">-- Select Topic --</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem">
+              <button
+                type="button"
+                class="btn-reject"
+                style="flex: 1"
+                onclick="closeModal()"
+              >
+                Cancel
+              </button>
+              <button type="submit" class="btn-accept" style="flex: 1">
+                💾 Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE_URL = "http://localhost:8080";
+
+      // Load user info
+      function loadUserInfo() {
+        const username = localStorage.getItem("username") || "Guest";
+        const userStr = localStorage.getItem("user");
+
+        document.getElementById("userAvatar").textContent = username
+          .charAt(0)
+          .toUpperCase();
+        document.getElementById("userName").textContent = username;
+
+        if (userStr) {
+          try {
+            const user = JSON.parse(userStr);
+            document.getElementById("userRole").textContent =
+              user.role || "User";
+          } catch (e) {
+            document.getElementById("userRole").textContent = "User";
+          }
+        } else {
+          document.getElementById("userRole").textContent = "User";
+        }
+      }
+
+      // Load user info on page load
+      loadUserInfo();
+
+      let enhancedPromptData = null; // Store enhanced prompt data
+      let currentImageBlob = null; // Store current generated image blob
+      let currentImageBase64 = null; // Store current image as base64
+      let currentPrompt = null; // Store current prompt used
+
+      // Load topics from database
+      async function loadTopics() {
+        try {
+          const response = await fetch(`${API_BASE_URL}/admin/topics`);
+          const topics = await response.json();
+
+          const topicSelect = document.getElementById("modalTopic");
+          topicSelect.innerHTML =
+            '<option value="">-- Select Topic --</option>';
+
+          topics.forEach((topic) => {
+            const option = document.createElement("option");
+            option.value = topic.name;
+            option.textContent = topic.name;
+            topicSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error loading topics:", error);
+          showAlert("Failed to load topics", "error");
+        }
+      }
+
+      // Load topics on page load
+      loadTopics();
+
+      // Enhance prompt with Gemini AI
+      async function enhancePrompt() {
+        const prompt = document.getElementById("prompt").value;
+
+        if (!prompt || prompt.trim() === "") {
+          showAlert("Please enter a prompt first", "error");
+          return;
+        }
+
+        const enhancedContainer = document.getElementById(
+          "enhancedPromptContainer"
+        );
+        const enhancedJson = document.getElementById("enhancedPromptJson");
+
+        enhancedJson.textContent = "Loading...";
+        enhancedContainer.style.display = "block";
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/admin/image-generation/enhance-prompt`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ prompt: prompt }),
+            }
+          );
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Parse the enhanced prompt
+            try {
+              const enhancedText = result.enhancedPrompt;
+              // Try to extract JSON from markdown code blocks if present
+              const jsonMatch =
+                enhancedText.match(/```json\s*([\s\S]*?)\s*```/) ||
+                enhancedText.match(/\{[\s\S]*\}/);
+
+              if (jsonMatch) {
+                const jsonStr = jsonMatch[1] || jsonMatch[0];
+                enhancedPromptData = JSON.parse(jsonStr);
+
+                // Display the enhanced prompt JSON
+                enhancedJson.textContent = JSON.stringify(
+                  enhancedPromptData,
+                  null,
+                  2
+                );
+                showAlert(
+                  "Prompt enhanced! Click 'Generate Image' to create the image.",
+                  "success"
+                );
+              } else {
+                enhancedJson.textContent = enhancedText;
+                showAlert(
+                  "Received enhanced prompt, but could not parse JSON. Using raw text.",
+                  "success"
+                );
+              }
+            } catch (e) {
+              console.error("JSON parse error:", e);
+              enhancedJson.textContent = result.enhancedPrompt;
+              showAlert("Prompt enhanced successfully!", "success");
+            }
+          } else {
+            enhancedJson.textContent = "Error: " + result.message;
+            showAlert(result.message, "error");
+          }
+        } catch (error) {
+          console.error("Error enhancing prompt:", error);
+          enhancedJson.textContent = "Error: " + error.message;
+          showAlert("Failed to enhance prompt: " + error.message, "error");
+        }
+      }
+
+      // Generate image using Pollinations.ai API
+      async function generateImage(event) {
+        event.preventDefault();
+
+        const userPrompt = document.getElementById("prompt").value;
+
+        // Use enhanced prompt if available, otherwise use user prompt
+        let finalPrompt = userPrompt;
+        if (enhancedPromptData && enhancedPromptData.enhanced_prompt) {
+          finalPrompt = enhancedPromptData.enhanced_prompt;
+          showAlert("Using AI enhanced prompt for generation...", "success");
+        } else {
+          showAlert(
+            "Using original prompt. Consider clicking 'Enhance with AI' first.",
+            "success"
+          );
+        }
+
+        // Show loading
+        document.getElementById("generateBtn").disabled = true;
+        document.getElementById("loading").classList.add("show");
+        document.getElementById("resultContainer").classList.remove("show");
+
+        try {
+          // Use Pollinations.ai API - it's free and doesn't need API key!
+          const encodedPrompt = encodeURIComponent(finalPrompt);
+          const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=${Math.floor(
+            Math.random() * 1000000
+          )}&nologo=true`;
+
+          // Fetch the image
+          const imageResponse = await fetch(pollinationsUrl);
+
+          if (!imageResponse.ok) {
+            throw new Error("Failed to generate image from Pollinations.ai");
+          }
+
+          // Get image blob
+          const imageBlob = await imageResponse.blob();
+
+          // Store blob and prompt for later use
+          currentImageBlob = imageBlob;
+          currentPrompt = finalPrompt;
+
+          // Convert blob to base64
+          const reader = new FileReader();
+          reader.readAsDataURL(imageBlob);
+
+          reader.onloadend = function () {
+            currentImageBase64 = reader.result;
+
+            // Display image (temporary URL)
+            const tempUrl = URL.createObjectURL(imageBlob);
+            document.getElementById("resultImage").src = tempUrl;
+            document.getElementById("resultContainer").classList.add("show");
+
+            showAlert("Image generated! Accept or Reject.", "success");
+
+            // Reset enhanced prompt data
+            enhancedPromptData = null;
+
+            // Hide loading
+            document.getElementById("generateBtn").disabled = false;
+            document.getElementById("loading").classList.remove("show");
+          };
+        } catch (error) {
+          console.error("Error generating image:", error);
+          showAlert("Failed to generate image: " + error.message, "error");
+
+          document.getElementById("generateBtn").disabled = false;
+          document.getElementById("loading").classList.remove("show");
+        }
+      }
+
+      // Reject image - reset everything
+      function rejectImage() {
+        document.getElementById("resultContainer").classList.remove("show");
+        document.getElementById("prompt").value = "";
+        document.getElementById("enhancedPromptContainer").style.display =
+          "none";
+        currentImageBlob = null;
+        currentImageBase64 = null;
+        currentPrompt = null;
+        enhancedPromptData = null;
+        showAlert("Image rejected", "success");
+      }
+
+      // Accept image - show modal to enter details
+      function acceptImage() {
+        if (!currentImageBlob || !currentImageBase64) {
+          showAlert("No image to accept", "error");
+          return;
+        }
+
+        // Show modal
+        document.getElementById("imageModal").classList.add("show");
+      }
+
+      // Close modal
+      function closeModal() {
+        document.getElementById("imageModal").classList.remove("show");
+        document.getElementById("saveImageForm").reset();
+      }
+
+      // Save image to backend with user input
+      async function saveImage(event) {
+        event.preventDefault();
+
+        const word = document.getElementById("modalWord").value;
+        const topic = document.getElementById("modalTopic").value;
+
+        if (!word || !topic) {
+          showAlert("Please fill in all fields", "error");
+          return;
+        }
+
+        if (!currentImageBase64) {
+          showAlert("No image data to save", "error");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/admin/image-generation/save-final`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                imageData: currentImageBase64,
+                word: word,
+                topic: topic,
+                prompt: currentPrompt,
+                status: "DRAFT",
+              }),
+            }
+          );
+
+          const data = await response.json();
+
+          if (data.success) {
+            showAlert("Image saved successfully! 🎉", "success");
+            closeModal();
+
+            // Reset everything
+            setTimeout(() => {
+              rejectImage();
+            }, 1000);
+          } else {
+            showAlert("Failed to save: " + data.message, "error");
+          }
+        } catch (error) {
+          console.error("Error saving image:", error);
+          showAlert("Failed to save image: " + error.message, "error");
+        }
+      }
+
+      // Show alert
+      function showAlert(message, type = "error") {
+        const alertMessage = document.getElementById("alertMessage");
+        alertMessage.textContent = message;
+        alertMessage.className = `alert alert-${type} show`;
+        setTimeout(() => {
+          alertMessage.classList.remove("show");
+        }, 5000);
+      }
+
+      // Logout
+      function logout() {
+        localStorage.removeItem("username");
+        window.location.href = "login.html";
+      }
+    </script>
+  </body>
+</html>

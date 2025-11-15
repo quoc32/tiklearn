@@ -1,0 +1,45 @@
+# Gift API examples
+
+### Get all gifts
+GET http://localhost:8080/api/gifts
+
+### Get gift by id
+GET http://localhost:8080/api/gifts/{{id}}
+
+### Create a gift
+POST http://localhost:8080/api/gifts
+Content-Type: application/json
+
+{
+  "name": "Bút chì màu",
+  "cost": 150,
+  "src": "/product/butchim.webp",
+  "quantity": 20
+}
+
+### Update a gift
+PUT http://localhost:8080/api/gifts/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Bút chì màu (phiên bản mới)",
+  "cost": 180,
+  "src": "/product/butchim_v2.webp",
+  "quantity": 15
+}
+
+### Delete a gift
+DELETE http://localhost:8080/api/gifts/{{id}}
+
+# Quick notes:
+# - Use the sample ids returned by POST/GET responses.
+# - Endpoints return JSON. POST returns created object, PUT returns updated object, DELETE returns 204 on success.
+
+### Upload an image for a gift (multipart)
+POST http://localhost:8080/api/gifts/upload
+Content-Type: multipart/form-data
+
+--file: (select file)
+
+# Response example:
+# { "path": "/uploads/product/1699999999999-12345.png", "filename": "1699999999999-12345.png" }
