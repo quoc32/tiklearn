@@ -1,0 +1,98 @@
+/* src/pages/PracticePage.css */
+.practice-container {
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.pov-video-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.pov-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Giữ tỷ lệ, không bị méo */
+}
+
+.practice-loading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* Lớp phủ cho các lựa chọn */
+.choices-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0) 100%);
+    padding: 100px 40px 40px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.choices-overlay.animate-in {
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.choices-prompt {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    text-align: center;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.choices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.choice-button {
+    padding: 18px 25px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.choice-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.02);
+}
