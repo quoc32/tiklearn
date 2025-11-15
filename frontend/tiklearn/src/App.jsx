@@ -1,20 +1,86 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import LearnWithPic from './components/LearnWithPic.jsx'
 import LearnWithVideo from './components/LearnWithVideo.jsx'
 import Redeem from './components/redeem.jsx'
 import CrudGift from '../../../frontend-2/crud_gift.jsx'
+import BackgroundEffect from './components/BackgroundEffect.jsx'
+import ForegroundEffect from './components/ForegroundEffect.jsx'
 
 function App() {
   const [activeTab, setActiveTab] = useState('pic')
+  const [activeForeground, setActiveFoneground] = useState(false)
+
+  const navStyle = {
+    // position: 'fixed',
+    position: 'sticky',
+    top: 0,
+    left: 0,
+    right: 0,
+    display: 'flex',
+    gap: '8px',
+    padding: '10px 16px',
+    alignItems: 'center',
+    background: '#ffffff',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+    zIndex: 1000,
+  };
+
+  const buttonBase = {
+    border: 'none',
+    background: 'transparent',
+    padding: '8px 12px',
+    borderRadius: 6,
+    cursor: 'pointer',
+    fontSize: 16,
+  };
+
+  const activeButton = {
+    background: '#0ea5a4',
+    color: '#fff',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+  };
+
+  // height of the fixed nav (used to offset content)
+  const navHeight = 54;
+
+  useEffect(() => {
+    let timer;
+    if (activeForeground) {
+      timer = setTimeout(() => {
+        setActiveFoneground(false);
+      }, 3000);
+    }
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [activeForeground])
 
   return (
-    <div>
-      <div role="tablist">
+    <>
+      <BackgroundEffect />
+      {/* {activeForeground ? <ForegroundEffect /> : null} */}
+
+      <div role="tablist" aria-label="Main navigation" style={navStyle}>
+        {/* Logo */}
+        <a
+          href="#"
+          onClick={(e) => { e.preventDefault(); setActiveTab('pic'); }}
+          aria-label="TikLearn Home"
+          style={{ display: 'flex', alignItems: 'center', marginRight: 8, textDecoration: 'none' }}
+        >
+          <img
+            src="./tiklearn-logo.png"
+            alt="TikLearn"
+            style={{ height: 40, width: 'auto', display: 'block', marginRight: 8 , borderRadius: 8}}
+          />
+          <span style={{ fontWeight: 700, color: '#0f172a', fontSize: 20 }}>TikLearn</span>
+        </a>
+
         <button
           role="tab"
           aria-selected={activeTab === 'pic'}
-          className={`${activeTab === 'pic' ? 'active' : ''}`}
+          style={activeTab === 'pic' ? { ...buttonBase, ...activeButton } : buttonBase}
           onClick={() => setActiveTab('pic')}
         >
           Ảnh
@@ -22,7 +88,7 @@ function App() {
         <button
           role="tab"
           aria-selected={activeTab === 'video'}
-          className={`${activeTab === 'video' ? 'active' : ''}`}
+          style={activeTab === 'video' ? { ...buttonBase, ...activeButton } : buttonBase}
           onClick={() => setActiveTab('video')}
         >
           Video
@@ -30,7 +96,7 @@ function App() {
         <button
           role="tab"
           aria-selected={activeTab === 'redeem'}
-          className={`${activeTab === 'redeem' ? 'active' : ''}`}
+          style={activeTab === 'redeem' ? { ...buttonBase, ...activeButton } : buttonBase}
           onClick={() => setActiveTab('redeem')}
         >
           Đổi quà
@@ -38,16 +104,23 @@ function App() {
         <button
           role="tab"
           aria-selected={activeTab === 'crud'}
-          className={`${activeTab === 'crud' ? 'active' : ''}`}
+          style={activeTab === 'crud' ? { ...buttonBase, ...activeButton } : buttonBase}
           onClick={() => setActiveTab('crud')}
         >
           Crud quà
         </button>
       </div>
 
-      <div className="tab-panel">
+      <div
+        className="tab-panel"
+        style={{
+          paddingTop: `${16}px`, // offset content so it's not hidden under the fixed nav
+          paddingLeft: 16,
+          paddingRight: 16,
+        }}
+      >
         {activeTab === 'pic' ? (
-          <LearnWithPic />
+          <LearnWithPic setActiveFoneground={setActiveFoneground}/>
         ) : activeTab === 'video' ? (
           <LearnWithVideo />
         ) : activeTab === 'redeem' ? (
@@ -56,8 +129,9 @@ function App() {
           <CrudGift />
         ) : null}
       </div>
-    </div>
-  )
+
+    </>
+  ) 
 }
 
 export default App

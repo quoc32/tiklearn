@@ -3,7 +3,7 @@ import React from 'react'
 import Card from './Card.jsx'
 import QuizCard from './QuizCard.jsx'
 
-function LearnWithPic() {
+function LearnWithPic({ setActiveFoneground }) {
   const initialItems = [{first: true}]
   
   const [items, setItems] = useState(initialItems)
@@ -78,7 +78,7 @@ function LearnWithPic() {
     // load more if wheel moves to the last item
     if (nextIndex >= items.length - 1) {
       // Nễu đủ 4 item, trừ item đầu thì load 1 QuizCard
-      if ((items.length) === 5 || (items.length) === 10 ) {
+      if ((items.length) === 5 || (items.length) === 10 || (items.length) % 5 === 0) {
         console.log("items", items);
         const word1 = items[(items.length - 1)].word;
         const word2 = items[(items.length - 2)].word;
@@ -86,9 +86,9 @@ function LearnWithPic() {
         const word4 = items[(items.length - 4)].word;
         const quizItem = {quiz: true, items: [word1, word2, word3, word4]};
         setItems(prevItems => [...prevItems, quizItem])
+      } else {
+        loadMore().catch(err => console.error(err))
       }
-
-      loadMore().catch(err => console.error(err))
     }
   }
 
@@ -123,7 +123,7 @@ function LearnWithPic() {
 
   return (
     <div
-      style={{ height: '90vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
+      style={{ height: '80vh', width: '97vw', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
       onWheel={onWheel}
@@ -135,7 +135,9 @@ function LearnWithPic() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          pointerEvents: 'auto'
+          pointerEvents: 'auto',
+          padding: 0,
+          margin: 0
         }}
       >
         <div
@@ -148,7 +150,9 @@ function LearnWithPic() {
             maxWidth: 420,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            padding: 0,
+            margin: 0
           }}
         >
           {
@@ -156,7 +160,12 @@ function LearnWithPic() {
             ?
             <QuizCard items={items[index]?.items}/> 
             :
-            <Card first={items[index]?.first ? true : false } title={items[index]?.word} description={items[index]?.description} image={items[index]?.image} />
+            <Card first={items[index]?.first ? true : false } 
+              title={items[index]?.word} 
+              description={items[index]?.description} 
+              image={items[index]?.image} 
+              setActiveFoneground={setActiveFoneground}
+              diffculty={items[index]?.difficultLevel}/>
           }
         </div>
       </div>
