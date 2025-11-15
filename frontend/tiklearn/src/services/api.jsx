@@ -1,7 +1,5 @@
-// src/services/api.js
 import axios from 'axios';
 
-// Cấu hình URL cơ sở của Spring Boot
 const API = axios.create({
     baseURL: 'http://localhost:8080/api/v1',
 });
@@ -35,6 +33,7 @@ export const submitQuizResults = (results) => {
 export const countLearned = (userId = 2) => {
     return API.get(`/users/${userId}/vocabularies/learned/count`);
 // === MODULE 2 API (MỚI) ===
+};
 
 /**
  * API 1: Lấy tất cả các kịch bản (tình huống)
@@ -48,6 +47,7 @@ export const getAllScenarios = () => {
  */
 export const getPrepKit = (scenarioId) => {
     return API.get(`/scenarios/${scenarioId}/prep-kit`);
+};
 export const getAllLearned = (userId = 2) => {
     return API.get(`/users/${userId}/vocabularies/learned`);
 };
@@ -64,6 +64,7 @@ export const getStartingPracticeNode = (scenarioId) => {
  */
 export const getNextNode = (choiceId) => {
     return API.get(`/scenarios/choice/${choiceId}`);
+    };
 export const getLearnedWithLimit = (userId = 2, limit = 3) => {
     return API.get(`/users/${userId}/vocabularies/learned?limit=${limit}`);
 };
