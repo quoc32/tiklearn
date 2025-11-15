@@ -1,1 +1,6 @@
-GET http://localhost:8080/api/user
+POST http://localhost:8080/api/image
+Content-Type: application/json
+
+{
+  "da_co": []
+}

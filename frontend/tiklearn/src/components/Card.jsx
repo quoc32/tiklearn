@@ -7,6 +7,14 @@ export default function Card({
   footer,
   onClick,
 }) {
+  // image can be either a full data URI (starts with "data:") or raw base64 string.
+  const src =
+    typeof image === 'string'
+      ? image.trim().startsWith('data:')
+        ? image
+        : `data:image/png;base64,${image}`
+      : undefined;
+
   return (
     <div
       onClick={onClick}
@@ -14,7 +22,7 @@ export default function Card({
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
-      {image && <img src={image} alt={title} className="w-full h-48 object-cover" />}
+      {src && <img src={src} alt={title} className="w-full h-48 object-cover" />}
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         <p className="mt-2 text-sm text-gray-600">{description}</p>
