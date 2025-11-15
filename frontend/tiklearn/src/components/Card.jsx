@@ -122,8 +122,9 @@ export default function Card({
                     </div>
 
                     <div className="my-6 text-xl md:text-2xl font-bold text-white tracking-wide">
-                      Giáo dục đạt đến đỉnh cao của nó khi nó gây 
-                      <span className="text-indigo-400"> "Nghiện"</span>
+                      <span className="text-indigo-400">Học nhanh </span>
+                      <span className="text-amber-400">- Nhớ lâu -</span>
+                      <span className="text-fuchsia-500"> Giải trí</span>
                     </div>
 
                     <div className="text-gray-300 font-semibold text-sm md:text-base mt-8">

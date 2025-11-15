@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "vocabularies")
@@ -29,6 +30,8 @@ public class Vocabulary {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+    @OneToMany(mappedBy = "vocabulary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserVocabulary> userVocabularies;
 
     // Constructors
     public Vocabulary() {
