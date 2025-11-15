@@ -861,30 +861,40 @@
             </div>
           </div>
 
-          <div class="form-section">
+            <div class="form-section">
             <button id="describeImageBtn" class="btn btn-secondary">
               🤖 Mô tả ảnh bằng AI
             </button>
+            <button
+              id="applyGeneratedBtn"
+              class="btn btn-primary"
+              style="margin-left:0.5rem; display:none;"
+            >
+              Apply
+            </button>
 
-            <div id="generateOutput" style="margin-top:1rem; display:none; white-space:pre-wrap; background: #fff; padding:1rem; border-radius:8px; border:1px solid var(--border); color:var(--dark);"></div>
-          </div>
-          <!-- >> Script cho mô tả -->
-          <script>
+            <div
+              id="generateOutput"
+              style="margin-top:1rem; display:none; white-space:pre-wrap; background: #fff; padding:1rem; border-radius:8px; border:1px solid var(--border); color:var(--dark);"
+            ></div>
+            </div>
+            <!-- >> Script cho mô tả -->
+            <script>
             // Describe selected image using Google's Generative Language API
             const describeImageBtn = document.getElementById("describeImageBtn");
             const generateOutput = document.getElementById("generateOutput");
+            const applyGeneratedBtn = document.getElementById("applyGeneratedBtn");
 
             function fileToBase64(file) {
               return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onerror = () => reject(new Error("Failed to read file"));
-                reader.onload = () => {
-                  // reader.result is like "data:image/png;base64,...."
-                  const result = reader.result || "";
-                  const commaIndex = result.indexOf(",");
-                  resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
-                };
-                reader.readAsDataURL(file);
+              const reader = new FileReader();
+              reader.onerror = () => reject(new Error("Failed to read file"));
+              reader.onload = () => {
+                const result = reader.result || "";
+                const commaIndex = result.indexOf(",");
+                resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
+              };
+              reader.readAsDataURL(file);
               });
             }
 
@@ -893,46 +903,62 @@
               if (!obj) return null;
               if (typeof obj === "string" && obj.trim()) return obj;
               if (Array.isArray(obj)) {
-                for (const item of obj) {
-                  const t = extractText(item);
-                  if (t) return t;
-                }
+              for (const item of obj) {
+                const t = extractText(item);
+                if (t) return t;
+              }
               } else if (typeof obj === "object") {
-                // check common keys
-                for (const key of ["text", "displayText", "content", "output", "candidates"]) {
-                  if (key in obj) {
-                    const t = extractText(obj[key]);
-                    if (t) return t;
-                  }
+              for (const key of ["text", "displayText", "content", "output", "candidates"]) {
+                if (key in obj) {
+                const t = extractText(obj[key]);
+                if (t) return t;
                 }
-                // fallback traverse
-                for (const k in obj) {
-                  const t = extractText(obj[k]);
-                  if (t) return t;
-                }
+              }
+              for (const k in obj) {
+                const t = extractText(obj[k]);
+                if (t) return t;
+              }
               }
               return null;
             }
 
+            function parseGeneratedText(txt) {
+              if (!txt) return null;
+              // normalize line breaks and multiple spaces
+              const singleLine = txt.replace(/\r?\n/g, " ").replace(/\s+/g, " ").trim();
+              // split by comma - take first 4 meaningful parts
+              const parts = singleLine.split("|").map((s) => s.trim()).filter(Boolean);
+              if (parts.length < 4) return null;
+              return {
+              vietnamese: parts[0],
+              english: parts[1],
+              vnDesc: parts[2],
+              enDesc: parts[3],
+              };
+            }
+
+            function showApplyButton(visible) {
+              applyGeneratedBtn.style.display = visible ? "inline-flex" : "none";
+            }
+
             describeImageBtn.addEventListener("click", async () => {
               if (!selectedFile) {
-                showAlert("Vui lòng chọn ảnh trước khi yêu cầu mô tả", "error");
-                return;
+              showAlert("Vui lòng chọn ảnh trước khi yêu cầu mô tả", "error");
+              return;
               }
               if (!selectedFile.type.startsWith("image/")) {
-                showAlert("Chức năng này chỉ hỗ trợ ảnh (image/*)", "error");
-                return;
+              showAlert("Chức năng này chỉ hỗ trợ ảnh (image/*)", "error");
+              return;
               }
 
-              // get API key (prompt once)
               let apiKey = localStorage.getItem("GGL_API_KEY") || "AIzaSyD6azrs5YuxSKDsU2Xa9k5G5eZ6a3g6XIA";
               if (!apiKey) {
-                apiKey = prompt("Nhập Google Generative Language API key (key=...):");
-                if (!apiKey) {
-                  showAlert("API key required", "error");
-                  return;
-                }
-                localStorage.setItem("GGL_API_KEY", apiKey);
+              apiKey = prompt("Nhập Google Generative Language API key (key=...):");
+              if (!apiKey) {
+                showAlert("API key required", "error");
+                return;
+              }
+              localStorage.setItem("GGL_API_KEY", apiKey);
               }
 
               describeImageBtn.disabled = true;
@@ -940,57 +966,90 @@
               describeImageBtn.textContent = "⏳ Đang mô tả...";
 
               try {
-                const b64 = await fileToBase64(selectedFile);
+              const b64 = await fileToBase64(selectedFile);
 
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=${encodeURIComponent(apiKey)}`;
+              const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite-preview-06-17:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-                const body = {
-                  contents: [
-                    {
-                      parts: [
-                        {
-                          inline_data: {
-                            mime_type: selectedFile.type,
-                            data: b64
-                          }
-                        },
-                        {
-                          text: "Hãy mô tả nội dung bức ảnh này ngắn gọn theo format sau: '<Từ vựng tiếng việt>, <Từ vựng tiếng anh>, <Mô tả ngắn tiếng việt>, <Mô tả ngắn tiếng anh> '"
-                        }
-                      ]
+              const body = {
+                contents: [
+                {
+                  parts: [
+                  {
+                    inline_data: {
+                    mime_type: selectedFile.type,
+                    data: b64
                     }
+                  },
+                  {
+                    text: "Hãy mô tả nội dung bức ảnh này thật ngắn gọn theo format sau: '<Từ vựng tiếng việt>| <Từ vựng tiếng anh>| <Mô tả ngắn tiếng việt>| <Mô tả ngắn tiếng anh, có chứa Từ vựng tiếng anh>'"
+                  }
                   ]
-                };
-
-                const res = await fetch(url, {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(body)
-                });
-
-                const json = await res.json();
-
-                if (!res.ok) {
-                  console.error("API error:", json);
-                  showAlert("Lỗi từ API: " + (json.error?.message || res.statusText), "error");
-                  generateOutput.style.display = "block";
-                  generateOutput.textContent = JSON.stringify(json, null, 2);
-                } else {
-                  // try to extract readable text
-                  const text = extractText(json) || JSON.stringify(json, null, 2);
-                  generateOutput.style.display = "block";
-                  generateOutput.textContent = text;
-                  showAlert("Mô tả ảnh đã trả về", "success");
                 }
+                ]
+              };
+
+              const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+              });
+
+              const json = await res.json();
+
+              if (!res.ok) {
+                console.error("API error:", json);
+                showAlert("Lỗi từ API: " + (json.error?.message || res.statusText), "error");
+                generateOutput.style.display = "block";
+                generateOutput.textContent = JSON.stringify(json, null, 2);
+                showApplyButton(false);
+              } else {
+                const text = extractText(json) || JSON.stringify(json, null, 2);
+                generateOutput.style.display = "block";
+                generateOutput.textContent = text;
+                showAlert("Mô tả ảnh đã trả về", "success");
+                const parsed = parseGeneratedText(text);
+                showApplyButton(!!parsed);
+                if (!parsed) {
+                // If parse failed, keep the raw output visible so user can edit/copy
+                showAlert("Không thể phân tích định dạng trả về tự động. Vui lòng chỉnh sửa thủ công.", "warning");
+                }
+              }
               } catch (err) {
-                console.error(err);
-                showAlert("Lỗi khi gọi API: " + err.message, "error");
+              console.error(err);
+              showAlert("Lỗi khi gọi API: " + err.message, "error");
+              showApplyButton(false);
               } finally {
-                describeImageBtn.disabled = false;
-                describeImageBtn.textContent = prevText;
+              describeImageBtn.disabled = false;
+              describeImageBtn.textContent = prevText;
               }
             });
-          </script>
+
+            applyGeneratedBtn.addEventListener("click", () => {
+              const text = generateOutput.textContent || "";
+              const parsed = parseGeneratedText(text);
+              if (!parsed) {
+                showAlert("Không tìm thấy nội dung hợp lệ để áp dụng", "error");
+                return;
+              }
+
+              const wordField = document.getElementById("word");
+              const descField = document.getElementById("description");
+              if (wordField) {
+              wordField.value = `${parsed.vietnamese} - ${parsed.english}`;
+              // trigger input event to update preview
+              wordField.dispatchEvent(new Event("input", { bubbles: true }));
+              }
+              if (descField) {
+              descField.value = `${parsed.vnDesc} - ${parsed.enDesc}`;
+              }
+
+              // update preview description if needed (no dedicated preview field exists for description)
+              const prevWord = document.getElementById("previewWord");
+              if (prevWord) prevWord.textContent = wordField ? wordField.value : "-";
+
+              showAlert("Đã áp dụng nội dung từ AI vào form", "success");
+            });
+            </script>
 
         </div>
       </div>

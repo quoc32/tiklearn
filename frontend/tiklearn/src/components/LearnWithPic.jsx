@@ -14,8 +14,6 @@ function LearnWithPic() {
   const cooldownRef = React.useRef(false)
   const loadingRef = React.useRef(false) // prevent concurrent loads
 
-  console.log("Items:", items)
-
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n))
 
   const goTo = (newIndex, dir) => {
@@ -79,15 +77,16 @@ function LearnWithPic() {
 
     // load more if wheel moves to the last item
     if (nextIndex >= items.length - 1) {
-      // Nễu đủ 4 item thì load 1 QuizCard
-      // if (items.length % 4 === 0) {
-      //   const title1 = items[(items.length - 1)].title;
-      //   const title2 = items[(items.length - 2)].title;
-      //   const title3 = items[(items.length - 3)].title;
-      //   const title4 = items[(items.length - 4)].title;
-      //   const quizItem = {quiz: true, items: [title1, title2, title3, title4]};
-      //   setItems(prevItems => [...prevItems, quizItem])
-      // }
+      // Nễu đủ 4 item, trừ item đầu thì load 1 QuizCard
+      if ((items.length) === 5 || (items.length) === 10 ) {
+        console.log("items", items);
+        const word1 = items[(items.length - 1)].word;
+        const word2 = items[(items.length - 2)].word;
+        const word3 = items[(items.length - 3)].word;
+        const word4 = items[(items.length - 4)].word;
+        const quizItem = {quiz: true, items: [word1, word2, word3, word4]};
+        setItems(prevItems => [...prevItems, quizItem])
+      }
 
       loadMore().catch(err => console.error(err))
     }
