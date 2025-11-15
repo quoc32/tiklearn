@@ -1,9 +1,0 @@
-POST http://localhost:8080/api/image
-Content-Type: application/json
-
-{
-  "da_co": ["f9d7a1ac-a1a8-44be-a28a-e06afe502870"]
-}
-
-###
-GET http://localhost:8080/api/image/f9d7a1ac-a1a8-44be-a28a-e06afe502870

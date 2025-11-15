@@ -33,6 +33,12 @@ public class Vocabulary {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    public Vocabulary() {
+    }
+
+    public Vocabulary(String word, String definition, String exampleSentence, String topic) {
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

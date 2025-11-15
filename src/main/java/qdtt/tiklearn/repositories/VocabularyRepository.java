@@ -12,4 +12,6 @@ public interface VocabularyRepository extends JpaRepository<Vocabulary, Long> {
     @Query("SELECT v FROM Vocabulary v WHERE v.topic = :topicName AND v.id NOT IN " +
             "(SELECT uv.vocabulary.id FROM UserVocabulary uv WHERE uv.user.id = :userId)")
     List<Vocabulary> findNewVocabulariesForUser(Long userId, String topicName, Pageable pageable);
+    List<Vocabulary> findByTopic(String topic);
+    long countByTopic(String topic);
 }

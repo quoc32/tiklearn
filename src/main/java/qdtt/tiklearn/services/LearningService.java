@@ -174,8 +174,6 @@ public class LearningService {
         TopicDTO dto = new TopicDTO();
         dto.setId(topic.getId());
         dto.setName(topic.getName());
-        dto.setIcon(topic.getIcon());
-        dto.setDescription(topic.getDescription());
         return dto;
     }
 }

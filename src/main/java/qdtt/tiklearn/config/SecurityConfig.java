@@ -48,15 +48,19 @@ public class SecurityConfig {
     }
 
     /**
-     * Đây là phần "mở cửa" cho React (Vite)
-     * Nó cho phép React chạy ở localhost:5173 gọi API ở localhost:8080
+     * Đây là phần "mở cửa" cho React (Vite) và frontend HTML
+     * Nó cho phép frontend gọi API từ các origin khác nhau
      */
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Cho phép frontend của Vite truy cập
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        // Cho phép frontend của Vite và Live Server truy cập
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173",      // Vite React
+            "http://127.0.0.1:5500",      // Live Server
+            "http://localhost:5500"       // Live Server alternative
+        ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

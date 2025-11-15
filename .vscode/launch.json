@@ -2,6 +2,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "TiklearnApplication",
+      "request": "launch",
+      "mainClass": "qdtt.tiklearn.TiklearnApplication",
+      "projectName": "tiklearn"
+    },
+    {
+      "type": "java",
       "name": "Spring Boot-DemoApplication<demo>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
